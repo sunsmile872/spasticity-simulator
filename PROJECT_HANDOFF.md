@@ -77,11 +77,19 @@ The interactive suite is organized into 6 responsive tabbed modules:
      * *Complete SCI*: Acute spinal shock (flaccidity, areflexia) transitioning after 6 weeks into chronic maladaptive neuroplasticity and explosive Flexor Reflex Afferent (FRA) spasms.
    * Real-time Firing Frequency Meters (Hz) for LRST, MRST, and LVST.
 
-4. **🦾 Tab 4: Biomechanical Stretch Reflex & Catch Engine**
-   * Passive joint stretch at Tardieu velocities ($V_1$ slow, $V_2$ natural, $V_3$ rapid).
-   * Sudden **Velocity-Dependent Catch** at $R_1 = 68^\circ$ under $V_3$, whereas $V_1$ reaches full anatomical ROM ($R_2 = 145^\circ$).
-   * Dynamic Tardieu Calculator: $\Delta R = R_2 - R_1 = 77^\circ > 20^\circ \implies$ confirms dynamic neural spasticity.
-   * Dual live oscilloscope graphing Spindle Ia discharge and joint resistance force ($N$).
+4. **🦾 Tab 4: Biomechanical Physiology Lab (Normal vs. Spastic Muscle Comparator)**
+   * **Anatomically Calibrated Sagittal Arm**: Humerus horizontal, **Biceps Brachii on the ANTERIOR (TOP)** flexor aspect, and **Triceps Brachii on the POSTERIOR (BOTTOM)** extensor aspect. Joint flexes upward toward shoulder ($120^\circ-140^\circ$) and extends downward/right to straight horizontal ($0^\circ$).
+   * **3 Clinical Modes**:
+     * 🟢 **Normal Control**: Intact presynaptic GABAergic gating (~90%) and reciprocal inhibition. Fast stretch ($V_3$) produces smooth movement through full ROM without catch ($R_1 = R_2 = 0^\circ$).
+     * 🔴 **Spastic Hypertonia (UMNS)**: Disrupted LRST brake + deficient presynaptic gating (~20%) + Persistent Inward Currents (PICs 3.8x). Rapid stretch triggers sudden **Velocity-Dependent Catch at $R_1 = 65^\circ$** with explosive EMG burst and resistance force surging to $> 100$ N.
+     * ⚖️ **Side-by-Side Dual View**: Concurrently animates two parallel arms stretching in real time, contrasting the smooth glide of normal muscle against the sudden catch wall of spastic muscle.
+   * **Rhythmic Clonus Engine**: Interactive toggle simulating sustained 5–7 Hz stretch tremor driven by delayed spindle feedback and failed Renshaw inhibition.
+   * **4-Channel Synchronized Electrophysiology Oscilloscope**:
+     * Channel 1: Spindle Ia Afferent Discharge (Hz, Cyan)
+     * Channel 2: Motoneuron Depolarization & Dendritic PICs (mV, Amber)
+     * Channel 3: Surface EMG Burst ($\mu$V, Emerald for normal / Crimson for spastic)
+     * Channel 4: Biomechanical Resistance Force ($N$, Coral)
+   * **Live Digital Telemetry Strip**: Instantaneous numerical readouts updating at 60fps.
 
 5. **🔄 Tab 5: Tissue Adaptations & The Vicious Cycle**
    * Post-injury immobilization timeline slider (0 to 24 months).

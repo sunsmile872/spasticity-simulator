@@ -61,16 +61,21 @@ Based on the clinical curriculum from the **Department of Physical Medicine & Re
   * *Incomplete SCI*: Dorsolateral column disruption (CST + LRST damaged; MRST/LVST preserved).
   * *Complete SCI*: Acute spinal shock transitioning to chronic maladaptive sprouting and explosive multi-segmental spasms.
 
-### 4. 🦾 Biomechanical Stretch Reflex & Catch Engine
-* Real-time biomechanical passive limb stretch across Tardieu velocity profiles:
-  * $V_1$: Very slow passive stretch (below reflex threshold).
-  * $V_2$: Natural gravity-induced fall rate.
-  * $V_3$: Rapid stretch (exceeding dynamic spindle threshold).
-* **Velocity-Dependent Catch & Dynamic Range**:
-  $$\Delta R = R_2 - R_1$$
-  * Catch occurs at angle $R_1$ under $V_3$.
-  * Anatomical passive limit reaches $R_2$ under $V_1$.
-  * $\Delta R > 20^\circ \implies$ Confirms dynamic neural spasticity (responsive to neuromodulation / BoNT-A).
+### 4. 🦾 Biomechanical Physiology Lab: Normal vs. Spastic Muscle Comparator
+* **Anatomically Calibrated Sagittal View**:
+  * **Anterior Biceps Brachii (Top)**: Flexor muscle with realistic fusiform contours and tendon cords inserting into the radial tuberosity. Dynamically bulges during flexion ($120^\circ$) and elongates during extension ($0^\circ$).
+  * **Posterior Triceps Brachii (Bottom)**: Extensor muscle along the dorsal humerus inserting into the olecranon process.
+* **3 Clinical & Physiological Modes**:
+  * 🟢 **Normal Control**: Intact presynaptic Ia gating (~90%) and reciprocal inhibition. Fast stretch ($V_3$) produces smooth, unhindered extension with zero catch ($R_1 = R_2 = 0^\circ$).
+  * 🔴 **Spastic Hypertonia (UMNS)**: Loss of LRST inhibitory brake + deficient presynaptic gating (~20%) + Persistent Inward Currents (PICs 3.8x). Rapid stretch triggers the classic **Lance Velocity-Dependent Catch at $R_1 = 65^\circ$** with violent muscle spasm and resistance surging to $> 100$ N.
+  * ⚖️ **Side-by-Side Dual View**: Concurrently stretches two limbs in real time to visualize the contrast between normal compliance and spastic reflex arrest.
+* **Interactive Clonus Simulation**: Demonstrates sustained 5–7 Hz stretch-evoked oscillatory tremor driven by delayed spindle feedback and failed Renshaw recurrent inhibition.
+* **4-Channel Synchronized Electrophysiology Oscilloscope**:
+  1. Spindle Ia Afferent Discharge (Hz, Cyan)
+  2. Motoneuron Depolarization & Dendritic PICs (mV, Amber)
+  3. Surface EMG (sEMG) Burst ($\mu$V, Emerald for normal / Crimson for spastic)
+  4. Joint Resistance Force ($N$, Coral)
+* **Live Digital Telemetry Strip**: Real-time numeric readouts updating at 60fps.
 
 ### 5. 🔄 Tissue Adaptations & The Vicious Cycle
 * Microstructural remodeling timeline (0 to 24 months post-injury).
