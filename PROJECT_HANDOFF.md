@@ -8,9 +8,10 @@
 ## 📌 Project Overview & Quick Links
 
 * **Active Workspace**: `/Users/ss/Gemini Antigravity/Spasticity simulator`
-* **Original Conversation**: [Previous Session](conversation://f44f92e2-ec37-4be4-b24e-9187c0eea436)
-* **Core Deliverable**: [`Spasticity_Interactive_Simulation.html`](file:///Users/ss/Gemini%20Antigravity/Playground/Spasticity_Interactive_Simulation.html)
-* **Source Slide Deck**: [`Pathophysiology of spasticity.pdf`](file:///Users/ss/Gemini%20Antigravity/Playground/Pathophysiology%20of%20spasticity.pdf) (By Dr. Pakawat Kaiyakit, Advisor: Dr. Ratana, Department of Physical Medicine & Rehabilitation)
+* **GitHub Repository**: [https://github.com/sunsmile872/spasticity-simulator](https://github.com/sunsmile872/spasticity-simulator)
+* **Live Interactive Preview**: [https://sunsmile872.github.io/spasticity-simulator/](https://sunsmile872.github.io/spasticity-simulator/)
+* **Core Deliverable**: [`index.html`](file:///Users/ss/Gemini%20Antigravity/Spasticity%20simulator/index.html) & [`Spasticity_Interactive_Simulation.html`](file:///Users/ss/Gemini%20Antigravity/Spasticity%20simulator/Spasticity_Interactive_Simulation.html)
+* **Source Slide Deck**: [`Pathophysiology of spasticity.pdf`](file:///Users/ss/Gemini%20Antigravity/Spasticity%20simulator/Pathophysiology%20of%20spasticity.pdf) (By Dr. Pakawat Kaiyakit, Advisor: Dr. Ratana, Department of Physical Medicine & Rehabilitation)
 * **Core Mission**: Transform complex supraspinal neuroanatomy, descending tract disinhibition mechanisms, segmental spinal reflex loops, tissue rheology, and clinical scoring systems of Spasticity and Normal Motor Control into a 100% Medical English, interactive 60fps web-based simulation and educational portal.
 * **Academic References & Benchmarks**:
   * *Braddom's Physical Medicine & Rehabilitation* (7th Ed., 2025, pp. 485–507)
