@@ -568,12 +568,20 @@
         <!-- Circuit Canvas & Description -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div class="lg:col-span-2 bg-[#060c1d] rounded-xl border border-slate-800 overflow-hidden p-3">
-            <div class="flex justify-between items-center text-xs px-2 mb-2">
+            <div class="flex flex-wrap justify-between items-center text-xs px-2 mb-2 gap-2">
               <span id="circuit-active-title" class="font-bold text-white text-sm">Monosynaptic Stretch Reflex Arc</span>
-              <span class="text-[11px] text-teal-400 font-mono">Animated Action Potentials</span>
+              <div class="flex items-center gap-2">
+                <button onclick="triggerSegmentalTap()" id="btn-seg-tap" class="px-2.5 py-1 rounded bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 font-bold transition flex items-center gap-1 shadow-sm">
+                  <span>🔨 Tap Tendon (Dynamic Bag 1)</span>
+                </button>
+                <button onclick="toggleSegmentalStaticStretch()" id="btn-seg-static" class="px-2.5 py-1 rounded bg-teal-500/20 hover:bg-teal-500/30 text-teal-300 border border-teal-500/40 font-bold transition flex items-center gap-1 shadow-sm">
+                  <span>📐 Sustained Stretch (Bag 2 & Chain)</span>
+                </button>
+                <span class="text-[11px] text-teal-400 font-mono hidden sm:inline">Active Synapses</span>
+              </div>
             </div>
-            <div class="w-full h-[320px] relative">
-              <canvas id="segmentalCanvas" width="700" height="320" class="w-full h-full block"></canvas>
+            <div class="w-full h-[360px] relative">
+              <canvas id="segmentalCanvas" width="700" height="360" class="w-full h-full block"></canvas>
             </div>
           </div>
 
@@ -1935,6 +1943,34 @@
       document.getElementById('circuit-card-patho').innerHTML = `<strong>Deficit in Spasticity:</strong> ${c.patho}`;
     }
 
+    let segmentalStimulusType = 'none'; // 'tap' or 'static'
+    let segmentalStimulusTimer = 0;
+
+    function triggerSegmentalTap() {
+      segmentalStimulusType = 'tap';
+      segmentalStimulusTimer = 60; // 60 frames burst
+    }
+
+    function toggleSegmentalStaticStretch() {
+      if (segmentalStimulusType === 'static') {
+        segmentalStimulusType = 'none';
+        segmentalStimulusTimer = 0;
+      } else {
+        segmentalStimulusType = 'static';
+        segmentalStimulusTimer = 999999;
+      }
+      const btn = document.getElementById('btn-seg-static');
+      if (btn) {
+        if (segmentalStimulusType === 'static') {
+          btn.classList.add('bg-teal-500', 'text-slate-900');
+          btn.classList.remove('bg-teal-500/20', 'text-teal-300');
+        } else {
+          btn.classList.remove('bg-teal-500', 'text-slate-900');
+          btn.classList.add('bg-teal-500/20', 'text-teal-300');
+        }
+      }
+    }
+
     function initSegmentalCanvas() {
       const canvas = document.getElementById('segmentalCanvas');
       if (!canvas) return;
@@ -1943,108 +1979,295 @@
       function renderCircuit() {
         if (State.currentTab !== 'normal') return;
         segmentalAnimTime += 0.035;
+        if (segmentalStimulusTimer > 0 && segmentalStimulusType === 'tap') {
+          segmentalStimulusTimer--;
+          if (segmentalStimulusTimer === 0) segmentalStimulusType = 'none';
+        }
+
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // Spinal Cord Butterfly Cross-Section Outline
-        const cx = 350, cy = 160;
-        ctx.fillStyle = '#0f172a';
+        const isTap = segmentalStimulusType === 'tap';
+        const isStatic = segmentalStimulusType === 'static';
+        const cType = State.segmentalCircuit;
+
+        // ==========================================
+        // LEFT HALF: INTRAFUSAL SPINDLE CAPSULE MICRO-ANATOMY
+        // ==========================================
+        const spLeft = 18, spTop = 35, spWidth = 230, spHeight = 295;
+        
+        // Spindle Container Box
+        ctx.fillStyle = '#091124';
+        ctx.strokeStyle = '#1e293b';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.roundRect(spLeft, spTop, spWidth, spHeight, 10);
+        ctx.fill(); ctx.stroke();
+
+        // Header Label
+        ctx.fillStyle = '#38bdf8';
+        ctx.font = 'bold 11px sans-serif';
+        ctx.fillText('INTRAFUSAL SPINDLE CAPSULE', spLeft + 12, spTop + 18);
+        ctx.font = '9px sans-serif';
+        ctx.fillStyle = '#64748b';
+        ctx.fillText('In Parallel with Extrafusal Muscle Fibers', spLeft + 12, spTop + 30);
+
+        // 1. Dynamic Nuclear Bag 1 Fiber (High Viscous Drag - Velocity sensitive dL/dt)
+        const bag1Y = spTop + 65;
+        ctx.fillStyle = isTap ? 'rgba(239, 68, 68, 0.25)' : 'rgba(56, 189, 248, 0.15)';
+        ctx.strokeStyle = isTap ? '#ef4444' : '#0284c7';
+        ctx.lineWidth = isTap ? 2 : 1.5;
+        // Tapered fiber ends + central equatorial bulge
+        ctx.beginPath();
+        ctx.moveTo(spLeft + 20, bag1Y);
+        ctx.lineTo(spLeft + 85, bag1Y - 9);
+        ctx.arc(spLeft + 115, bag1Y, 13, -Math.PI/2, Math.PI/2); // central nucleated bag
+        ctx.lineTo(spLeft + 85, bag1Y + 9);
+        ctx.lineTo(spLeft + 20, bag1Y);
+        ctx.fill(); ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(spLeft + 128, bag1Y);
+        ctx.lineTo(spLeft + 210, bag1Y);
+        ctx.stroke();
+
+        // Clustered Nuclei inside Bag 1
+        ctx.fillStyle = isTap ? '#fca5a5' : '#38bdf8';
+        for (let n = -2; n <= 2; n++) {
+          ctx.beginPath();
+          ctx.arc(spLeft + 115 + (n % 2) * 5 - 2, bag1Y + n * 3.5, 2.5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        ctx.fillStyle = isTap ? '#ef4444' : '#94a3b8';
+        ctx.font = 'bold 10px sans-serif';
+        ctx.fillText('1. Dynamic Nuclear Bag 1 (dL/dt)', spLeft + 20, bag1Y - 14);
+
+        // 2. Static Nuclear Bag 2 Fiber (Static length sensitive L)
+        const bag2Y = spTop + 145;
+        ctx.fillStyle = isStatic ? 'rgba(20, 184, 166, 0.3)' : 'rgba(15, 118, 110, 0.15)';
+        ctx.strokeStyle = isStatic ? '#14b8a6' : '#0d9488';
+        ctx.lineWidth = isStatic ? 2 : 1.5;
+        ctx.beginPath();
+        ctx.moveTo(spLeft + 20, bag2Y);
+        ctx.lineTo(spLeft + 85, bag2Y - 8);
+        ctx.arc(spLeft + 115, bag2Y, 11, -Math.PI/2, Math.PI/2);
+        ctx.lineTo(spLeft + 85, bag2Y + 8);
+        ctx.lineTo(spLeft + 20, bag2Y);
+        ctx.fill(); ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(spLeft + 126, bag2Y);
+        ctx.lineTo(spLeft + 210, bag2Y);
+        ctx.stroke();
+
+        // Clustered Nuclei in Bag 2
+        ctx.fillStyle = isStatic ? '#5eead4' : '#2dd4bf';
+        for (let n = -2; n <= 2; n++) {
+          ctx.beginPath();
+          ctx.arc(spLeft + 115 + (n % 2) * 4 - 2, bag2Y + n * 3, 2.3, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.fillStyle = isStatic ? '#14b8a6' : '#94a3b8';
+        ctx.font = 'bold 10px sans-serif';
+        ctx.fillText('2. Static Nuclear Bag 2 (Length L)', spLeft + 20, bag2Y - 12);
+
+        // 3. Nuclear Chain Fibers (Single file nuclei - Length sensitive L)
+        const chainY = spTop + 225;
+        ctx.fillStyle = isStatic ? 'rgba(245, 158, 11, 0.25)' : 'rgba(180, 83, 9, 0.15)';
+        ctx.strokeStyle = isStatic ? '#f59e0b' : '#d97706';
+        ctx.lineWidth = isStatic ? 2 : 1.5;
+        ctx.beginPath();
+        ctx.roundRect(spLeft + 20, chainY - 6, 190, 12, 6);
+        ctx.fill(); ctx.stroke();
+
+        // Single file row of nuclei
+        ctx.fillStyle = isStatic ? '#fde68a' : '#fbbf24';
+        for (let c = 0; c < 8; c++) {
+          ctx.beginPath();
+          ctx.arc(spLeft + 75 + c * 10, chainY, 2.5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.fillStyle = isStatic ? '#f59e0b' : '#94a3b8';
+        ctx.font = 'bold 10px sans-serif';
+        ctx.fillText('3. Nuclear Chain Fiber (Single File L)', spLeft + 20, chainY - 10);
+
+        // Fusimotor γ-Motor End Plates (Polar Contractile Ends)
+        ctx.fillStyle = '#a855f7';
+        ctx.font = '8px sans-serif';
+        ctx.fillText('γd-polar drive', spLeft + 22, bag1Y + 12);
+        ctx.fillText('γs-polar drive', spLeft + 22, bag2Y + 12);
+        ctx.fillText('γs-polar drive', spLeft + 22, chainY + 14);
+
+        // Annulospiral Ia Coil (wraps around Bag 1, Bag 2 & Chain equators)
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 2.5;
+        for (let loop = -1; loop <= 1; loop++) {
+          ctx.beginPath();
+          ctx.ellipse(spLeft + 115 + loop * 8, bag1Y, 4, 15, 0, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.ellipse(spLeft + 115 + loop * 8, bag2Y, 3.5, 13, 0, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.ellipse(spLeft + 115 + loop * 8, chainY, 3, 9, 0, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+
+        // Status Banner under Spindle
+        ctx.fillStyle = isTap ? '#ef4444' : (isStatic ? '#14b8a6' : '#64748b');
+        ctx.font = 'bold 10px sans-serif';
+        if (isTap) {
+          ctx.fillText('⚡ Piezo2 OPEN! High-velocity dL/dt burst', spLeft + 12, spTop + spHeight - 12);
+        } else if (isStatic) {
+          ctx.fillText('📐 Piezo2 Tonic: Group Ia & II Length Train', spLeft + 12, spTop + spHeight - 12);
+        } else {
+          ctx.fillText('Tonic Baseline Spindle Rest Firing (15 Hz)', spLeft + 12, spTop + spHeight - 12);
+        }
+
+        // ==========================================
+        // RIGHT HALF: SPINAL CORD BUTTERFLY & SYNAPTIC CONNECTIONS
+        // ==========================================
+        const cx = 500, cy = 180;
+        
+        // Spinal Cord Outline
+        ctx.fillStyle = '#0a0f1d';
         ctx.strokeStyle = '#334155';
         ctx.lineWidth = 2;
         ctx.beginPath();
         ctx.arc(cx, cy, 140, 0, Math.PI * 2);
         ctx.fill(); ctx.stroke();
 
-        // Grey matter butterfly representation
+        // Grey matter butterfly
         ctx.fillStyle = '#1e293b';
         ctx.beginPath();
-        // Left dorsal & ventral horn
-        ctx.ellipse(cx - 50, cy - 45, 30, 55, Math.PI / 6, 0, Math.PI * 2);
-        ctx.ellipse(cx - 55, cy + 45, 45, 40, -Math.PI / 6, 0, Math.PI * 2);
-        // Right dorsal & ventral horn
-        ctx.ellipse(cx + 50, cy - 45, 30, 55, -Math.PI / 6, 0, Math.PI * 2);
-        ctx.ellipse(cx + 55, cy + 45, 45, 40, Math.PI / 6, 0, Math.PI * 2);
+        ctx.ellipse(cx - 45, cy - 40, 26, 48, Math.PI / 6, 0, Math.PI * 2);
+        ctx.ellipse(cx - 50, cy + 40, 40, 36, -Math.PI / 6, 0, Math.PI * 2);
+        ctx.ellipse(cx + 45, cy - 40, 26, 48, -Math.PI / 6, 0, Math.PI * 2);
+        ctx.ellipse(cx + 50, cy + 40, 40, 36, Math.PI / 6, 0, Math.PI * 2);
         ctx.fill();
 
         // Central canal
         ctx.fillStyle = '#38bdf8';
-        ctx.beginPath(); ctx.arc(cx, cy, 6, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(cx, cy, 5, 0, Math.PI * 2); ctx.fill();
 
-        // Dorsal Root Ganglion (DRG) on the left
-        const drgX = 140, drgY = 90;
-        ctx.fillStyle = '#334155';
+        // Dorsal Root Ganglion (DRG)
+        const drgX = 330, drgY = cy - 70;
+        ctx.fillStyle = '#1e293b';
         ctx.strokeStyle = '#38bdf8';
         ctx.lineWidth = 2;
-        ctx.beginPath(); ctx.arc(drgX, drgY, 14, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+        ctx.beginPath(); ctx.arc(drgX, drgY, 15, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
         ctx.fillStyle = '#38bdf8';
-        ctx.font = 'bold 10px sans-serif';
-        ctx.fillText('DRG', drgX - 10, drgY + 4);
+        ctx.font = 'bold 9px sans-serif';
+        ctx.fillText('DRG', drgX - 10, drgY + 3);
 
-        // Peripheral Sensory Input line entering DRG
+        // Group Ia Afferent Fiber from Spindle Equator to DRG
+        const iaStartEquatorX = spLeft + 115, iaStartEquatorY = bag1Y;
         ctx.strokeStyle = '#38bdf8';
         ctx.lineWidth = 2.5;
         ctx.beginPath();
-        ctx.moveTo(40, drgY);
-        ctx.lineTo(drgX, drgY);
+        ctx.moveTo(iaStartEquatorX, iaStartEquatorY);
+        ctx.bezierCurveTo(spLeft + 220, iaStartEquatorY - 40, drgX - 60, drgY - 20, drgX - 15, drgY);
         ctx.stroke();
-        ctx.fillStyle = '#ffffff';
-        ctx.font = '10px sans-serif';
-        ctx.fillText('Sensory Afferent', 40, drgY - 8);
+
+        // Group II Afferent Fiber from Bag 2/Chain to DRG
+        ctx.strokeStyle = '#2dd4bf';
+        ctx.lineWidth = 1.8;
+        ctx.setLineDash([4, 3]);
+        ctx.beginPath();
+        ctx.moveTo(spLeft + 115, bag2Y);
+        ctx.bezierCurveTo(spLeft + 230, bag2Y + 10, drgX - 40, drgY + 20, drgX - 15, drgY);
+        ctx.stroke();
+        ctx.setLineDash([]); // reset dash
+
+        // Labels for Afferents
+        ctx.fillStyle = '#38bdf8';
+        ctx.font = 'bold 10px sans-serif';
+        ctx.fillText('Group Ia (Annulospiral)', spLeft + 140, iaStartEquatorY - 18);
+        ctx.fillStyle = '#2dd4bf';
+        ctx.font = '9px sans-serif';
+        ctx.fillText('Group II (Flower-spray)', spLeft + 140, bag2Y + 20);
 
         // Sensory Fiber from DRG entering Dorsal Horn
-        const dorsalHornX = cx - 50, dorsalHornY = cy - 45;
+        const dorsalHornX = cx - 45, dorsalHornY = cy - 40;
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 2.5;
         ctx.beginPath();
-        ctx.moveTo(drgX + 14, drgY);
-        ctx.quadraticCurveTo(cx - 100, cy - 70, dorsalHornX, dorsalHornY);
+        ctx.moveTo(drgX + 15, drgY);
+        ctx.quadraticCurveTo(cx - 90, cy - 65, dorsalHornX, dorsalHornY);
         ctx.stroke();
 
-        // Ventral Horn Motor Neuron (Agonist α-MN)
-        const mnX = cx - 55, mnY = cy + 45;
-        ctx.fillStyle = '#059669';
+        // Action potential speed multiplier based on stimulus
+        let apSpeed = 2.0;
+        if (isTap) apSpeed = 6.5; // Rapid dynamic firing burst
+        else if (isStatic) apSpeed = 3.5;
+
+        // Draw animated traveling action potentials on Ia fiber
+        drawPathway(ctx, iaStartEquatorX, iaStartEquatorY, drgX - 15, drgY, '#38bdf8', apSpeed, segmentalAnimTime);
+        drawPathway(ctx, drgX + 15, drgY, dorsalHornX, dorsalHornY, '#38bdf8', apSpeed, segmentalAnimTime);
+
+        // Agonist α-Motor Neuron (Rexed Lamina IX)
+        const mnX = cx - 50, mnY = cy + 40;
+        ctx.fillStyle = isTap ? '#059669' : '#047857';
         ctx.strokeStyle = '#34d399';
         ctx.lineWidth = 2;
         ctx.beginPath(); ctx.arc(mnX, mnY, 15, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
         ctx.fillStyle = '#ffffff';
-        ctx.font = 'bold 11px sans-serif';
-        ctx.fillText('α-MN', mnX - 14, mnY + 4);
+        ctx.font = 'bold 10px sans-serif';
+        ctx.fillText('α-MN', mnX - 13, mnY + 4);
 
-        // Efferent Motor Axon leaving through Ventral Root
+        // Efferent Motor Axon to Agonist Muscle
+        const motorSpeed = isTap ? 5.5 : (isStatic ? 3.0 : 1.5);
         ctx.strokeStyle = '#34d399';
         ctx.lineWidth = 3;
         ctx.beginPath();
         ctx.moveTo(mnX, mnY + 15);
-        ctx.quadraticCurveTo(cx - 110, cy + 90, 40, cy + 90);
+        ctx.quadraticCurveTo(cx - 100, cy + 90, 260, cy + 90);
         ctx.stroke();
+        drawPathway(ctx, mnX, mnY + 15, 260, cy + 90, '#34d399', motorSpeed, segmentalAnimTime);
         ctx.fillStyle = '#34d399';
-        ctx.fillText('Efferent to Agonist Muscle', 40, cy + 105);
+        ctx.font = 'bold 10px sans-serif';
+        ctx.fillText('Aα Efferent → Agonist Muscle Twitch', 260, cy + 105);
 
-        // Specific Circuit Rendering & Interneurons
-        const cType = State.segmentalCircuit;
-
+        // ==========================================
+        // SYNAPTIC CIRCUITS (BRANCHING LOGIC)
+        // ==========================================
         if (cType === 'stretch') {
-          // Direct Monosynaptic pathway from dorsal horn to ventral horn α-MN
-          drawPathway(ctx, dorsalHornX, dorsalHornY, mnX, mnY - 15, '#38bdf8', 3, segmentalAnimTime);
+          // MONOSYNAPTIC BRANCH: Direct synapse to α-MN
+          drawPathway(ctx, dorsalHornX, dorsalHornY, mnX, mnY - 15, '#38bdf8', apSpeed, segmentalAnimTime);
+          
+          // Synaptic Cleft Glow / Neurotransmitter Callout
           ctx.fillStyle = '#facc15';
-          ctx.font = 'bold 11px sans-serif';
-          ctx.fillText('Direct Monosynaptic Synapse (Glutamate)', cx - 180, cy);
+          ctx.beginPath();
+          ctx.arc(mnX, mnY - 15, 5, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.fillStyle = '#facc15';
+          ctx.font = 'bold 10px sans-serif';
+          ctx.fillText('Monosynaptic EPSP (Glutamate)', cx - 180, cy);
         } else if (cType === 'reciprocal') {
-          // Ia Inhibitory Interneuron
-          const inX = cx - 20, inY = cy;
+          // DISYNAPTIC RECIPROCAL INHIBITION BRANCH
+          // Monosynaptic branch still fires
+          drawPathway(ctx, dorsalHornX, dorsalHornY, mnX, mnY - 15, '#38bdf8', apSpeed, segmentalAnimTime);
+
+          // Ia Inhibitory Interneuron (Rexed Lamina VII)
+          const inX = cx - 15, inY = cy;
           ctx.fillStyle = '#0284c7';
           ctx.beginPath(); ctx.arc(inX, inY, 12, 0, Math.PI * 2); ctx.fill();
           ctx.fillStyle = '#ffffff'; ctx.font = '9px sans-serif'; ctx.fillText('Ia-IN', inX - 10, inY + 3);
 
-          // Afferent to Ia-IN
-          drawPathway(ctx, dorsalHornX, dorsalHornY, inX, inY, '#38bdf8', 2.5, segmentalAnimTime);
+          // Afferent to Ia-IN (Glutamate excitation)
+          drawPathway(ctx, dorsalHornX, dorsalHornY, inX, inY, '#38bdf8', apSpeed, segmentalAnimTime);
 
           // Antagonist Motor Neuron (Right ventral horn)
-          const antMnX = cx + 55, antMnY = cy + 45;
+          const antMnX = cx + 50, antMnY = cy + 40;
           ctx.fillStyle = '#dc2626';
           ctx.beginPath(); ctx.arc(antMnX, antMnY, 14, 0, Math.PI * 2); ctx.fill();
           ctx.fillStyle = '#ffffff'; ctx.font = '9px sans-serif'; ctx.fillText('Antag', antMnX - 11, antMnY + 3);
 
-          // Inhibitory pathway (Glycine)
-          drawPathway(ctx, inX, inY, antMnX - 10, antMnY, '#ef4444', 2.5, segmentalAnimTime);
-          ctx.fillStyle = '#ef4444'; ctx.font = '10px sans-serif'; ctx.fillText('Inhibitory Synapse (Glycine)', cx - 10, cy + 30);
+          // Glycinergic IPSP inhibitory pathway to Antagonist
+          drawPathway(ctx, inX, inY, antMnX - 10, antMnY, '#ef4444', apSpeed, segmentalAnimTime);
+          ctx.fillStyle = '#ef4444'; ctx.font = 'bold 10px sans-serif';
+          ctx.fillText('Inhibitory Synapse (Glycine IPSP)', cx - 10, cy + 30);
         } else if (cType === 'autogenic') {
           // GTO Ib Inhibitory Interneuron
           const ibInX = cx - 15, ibInY = cy - 10;
@@ -2054,21 +2277,19 @@
 
           drawPathway(ctx, dorsalHornX, dorsalHornY, ibInX, ibInY, '#f59e0b', 3, segmentalAnimTime);
           drawPathway(ctx, ibInX, ibInY, mnX + 10, mnY - 10, '#ef4444', 3, segmentalAnimTime);
-          ctx.fillStyle = '#ef4444'; ctx.font = 'bold 11px sans-serif'; ctx.fillText('Agonist Shutdown (Ceiling Effect)', cx - 170, cy + 20);
+          ctx.fillStyle = '#ef4444'; ctx.font = 'bold 11px sans-serif'; ctx.fillText('Agonist Shutdown (GTO Ceiling Effect)', cx - 180, cy + 20);
         } else if (cType === 'renshaw') {
-          // Renshaw Cell
-          const renX = cx - 105, renY = cy + 45;
+          // Renshaw Cell Circuit
+          const renX = cx - 95, renY = cy + 35;
           ctx.fillStyle = '#6366f1';
           ctx.beginPath(); ctx.arc(renX, renY, 13, 0, Math.PI * 2); ctx.fill();
           ctx.fillStyle = '#ffffff'; ctx.font = '9px sans-serif'; ctx.fillText('Rensh', renX - 11, renY + 3);
 
-          // Motor axon collateral to Renshaw (ACh)
           drawPathway(ctx, mnX - 15, mnY, renX + 13, renY, '#a855f7', 3, segmentalAnimTime);
-          // Renshaw negative feedback loop back to α-MN (Glycine)
           drawPathway(ctx, renX + 8, renY - 10, mnX - 8, mnY - 10, '#ef4444', 3, segmentalAnimTime);
-          ctx.fillStyle = '#818cf8'; ctx.font = '10px sans-serif'; ctx.fillText('Recurrent Negative Feedback', renX - 70, renY + 25);
+          ctx.fillStyle = '#818cf8'; ctx.font = '10px sans-serif'; ctx.fillText('Recurrent Glycine Feedback', renX - 85, renY + 25);
         } else if (cType === 'presynaptic') {
-          // GABAergic Presynaptic Interneuron
+          // GABAergic Presynaptic Interneuron (PAD)
           const gabaX = dorsalHornX - 25, gabaY = dorsalHornY + 25;
           ctx.fillStyle = '#10b981';
           ctx.beginPath(); ctx.arc(gabaX, gabaY, 12, 0, Math.PI * 2); ctx.fill();
@@ -2078,16 +2299,15 @@
           ctx.strokeStyle = '#06b6d4';
           ctx.lineWidth = 2;
           ctx.beginPath();
-          ctx.moveTo(cx, 30);
+          ctx.moveTo(cx, 40);
           ctx.lineTo(gabaX + 10, gabaY);
           ctx.stroke();
           ctx.fillStyle = '#06b6d4';
           ctx.font = '10px sans-serif';
-          ctx.fillText('Descending LRST Drive', cx + 10, 45);
+          ctx.fillText('Descending LRST Drive', cx + 10, 50);
 
-          // Axo-axonic synapse on primary afferent terminal
           drawPathway(ctx, gabaX, gabaY, dorsalHornX, dorsalHornY, '#10b981', 2, segmentalAnimTime);
-          ctx.fillStyle = '#10b981'; ctx.font = 'bold 11px sans-serif'; ctx.fillText('Axo-Axonic Primary Afferent Depolarization (PAD)', cx - 210, cy - 25);
+          ctx.fillStyle = '#10b981'; ctx.font = 'bold 11px sans-serif'; ctx.fillText('Axo-Axonic Presynaptic Gating (PAD)', cx - 210, cy - 25);
         }
 
         requestAnimationFrame(renderCircuit);
