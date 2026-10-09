@@ -580,8 +580,8 @@
                 <span class="text-[11px] text-teal-400 font-mono hidden sm:inline">Active Synapses</span>
               </div>
             </div>
-            <div class="w-full h-[360px] relative">
-              <canvas id="segmentalCanvas" width="700" height="360" class="w-full h-full block"></canvas>
+            <div class="w-full h-[380px] relative">
+              <canvas id="segmentalCanvas" width="780" height="380" class="w-full h-full block"></canvas>
             </div>
           </div>
 
@@ -1993,10 +1993,10 @@
         // ==========================================
         // LEFT HALF: INTRAFUSAL SPINDLE CAPSULE MICRO-ANATOMY
         // ==========================================
-        const spLeft = 18, spTop = 35, spWidth = 230, spHeight = 295;
+        const spLeft = 20, spTop = 30, spWidth = 250, spHeight = 320;
         
         // Spindle Container Box
-        ctx.fillStyle = '#091124';
+        ctx.fillStyle = '#080e1e';
         ctx.strokeStyle = '#1e293b';
         ctx.lineWidth = 1.5;
         ctx.beginPath();
@@ -2006,144 +2006,151 @@
         // Header Label
         ctx.fillStyle = '#38bdf8';
         ctx.font = 'bold 11px sans-serif';
-        ctx.fillText('INTRAFUSAL SPINDLE CAPSULE', spLeft + 12, spTop + 18);
+        ctx.fillText('INTRAFUSAL SPINDLE CAPSULE', spLeft + 14, spTop + 20);
         ctx.font = '9px sans-serif';
         ctx.fillStyle = '#64748b';
-        ctx.fillText('In Parallel with Extrafusal Muscle Fibers', spLeft + 12, spTop + 30);
+        ctx.fillText('In Parallel with Extrafusal Muscle Fibers', spLeft + 14, spTop + 33);
 
         // 1. Dynamic Nuclear Bag 1 Fiber (High Viscous Drag - Velocity sensitive dL/dt)
-        const bag1Y = spTop + 65;
+        const bag1Y = spTop + 75;
+        ctx.fillStyle = isTap ? '#ef4444' : '#94a3b8';
+        ctx.font = 'bold 10px sans-serif';
+        ctx.fillText('1. Dynamic Nuclear Bag 1 (dL/dt)', spLeft + 14, bag1Y - 14);
+
         ctx.fillStyle = isTap ? 'rgba(239, 68, 68, 0.25)' : 'rgba(56, 189, 248, 0.15)';
         ctx.strokeStyle = isTap ? '#ef4444' : '#0284c7';
         ctx.lineWidth = isTap ? 2 : 1.5;
-        // Tapered fiber ends + central equatorial bulge
         ctx.beginPath();
-        ctx.moveTo(spLeft + 20, bag1Y);
-        ctx.lineTo(spLeft + 85, bag1Y - 9);
-        ctx.arc(spLeft + 115, bag1Y, 13, -Math.PI/2, Math.PI/2); // central nucleated bag
-        ctx.lineTo(spLeft + 85, bag1Y + 9);
-        ctx.lineTo(spLeft + 20, bag1Y);
+        ctx.moveTo(spLeft + 15, bag1Y);
+        ctx.lineTo(spLeft + 90, bag1Y - 9);
+        ctx.arc(spLeft + 125, bag1Y, 13, -Math.PI/2, Math.PI/2);
+        ctx.lineTo(spLeft + 90, bag1Y + 9);
+        ctx.lineTo(spLeft + 15, bag1Y);
         ctx.fill(); ctx.stroke();
 
         ctx.beginPath();
-        ctx.moveTo(spLeft + 128, bag1Y);
-        ctx.lineTo(spLeft + 210, bag1Y);
+        ctx.moveTo(spLeft + 138, bag1Y);
+        ctx.lineTo(spLeft + 235, bag1Y);
         ctx.stroke();
 
         // Clustered Nuclei inside Bag 1
         ctx.fillStyle = isTap ? '#fca5a5' : '#38bdf8';
         for (let n = -2; n <= 2; n++) {
           ctx.beginPath();
-          ctx.arc(spLeft + 115 + (n % 2) * 5 - 2, bag1Y + n * 3.5, 2.5, 0, Math.PI * 2);
+          ctx.arc(spLeft + 125 + (n % 2) * 5 - 2, bag1Y + n * 3.5, 2.5, 0, Math.PI * 2);
           ctx.fill();
         }
 
-        ctx.fillStyle = isTap ? '#ef4444' : '#94a3b8';
-        ctx.font = 'bold 10px sans-serif';
-        ctx.fillText('1. Dynamic Nuclear Bag 1 (dL/dt)', spLeft + 20, bag1Y - 14);
+        // Polar Drive label (Bottom-right of fiber, completely clear of title)
+        ctx.fillStyle = '#a855f7';
+        ctx.font = '8px sans-serif';
+        ctx.fillText('γd-polar drive', spLeft + 175, bag1Y + 14);
 
         // 2. Static Nuclear Bag 2 Fiber (Static length sensitive L)
-        const bag2Y = spTop + 145;
+        const bag2Y = spTop + 155;
+        ctx.fillStyle = isStatic ? '#14b8a6' : '#94a3b8';
+        ctx.font = 'bold 10px sans-serif';
+        ctx.fillText('2. Static Nuclear Bag 2 (Length L)', spLeft + 14, bag2Y - 14);
+
         ctx.fillStyle = isStatic ? 'rgba(20, 184, 166, 0.3)' : 'rgba(15, 118, 110, 0.15)';
         ctx.strokeStyle = isStatic ? '#14b8a6' : '#0d9488';
         ctx.lineWidth = isStatic ? 2 : 1.5;
         ctx.beginPath();
-        ctx.moveTo(spLeft + 20, bag2Y);
-        ctx.lineTo(spLeft + 85, bag2Y - 8);
-        ctx.arc(spLeft + 115, bag2Y, 11, -Math.PI/2, Math.PI/2);
-        ctx.lineTo(spLeft + 85, bag2Y + 8);
-        ctx.lineTo(spLeft + 20, bag2Y);
+        ctx.moveTo(spLeft + 15, bag2Y);
+        ctx.lineTo(spLeft + 90, bag2Y - 8);
+        ctx.arc(spLeft + 125, bag2Y, 11, -Math.PI/2, Math.PI/2);
+        ctx.lineTo(spLeft + 90, bag2Y + 8);
+        ctx.lineTo(spLeft + 15, bag2Y);
         ctx.fill(); ctx.stroke();
 
         ctx.beginPath();
-        ctx.moveTo(spLeft + 126, bag2Y);
-        ctx.lineTo(spLeft + 210, bag2Y);
+        ctx.moveTo(spLeft + 136, bag2Y);
+        ctx.lineTo(spLeft + 235, bag2Y);
         ctx.stroke();
 
         // Clustered Nuclei in Bag 2
         ctx.fillStyle = isStatic ? '#5eead4' : '#2dd4bf';
         for (let n = -2; n <= 2; n++) {
           ctx.beginPath();
-          ctx.arc(spLeft + 115 + (n % 2) * 4 - 2, bag2Y + n * 3, 2.3, 0, Math.PI * 2);
+          ctx.arc(spLeft + 125 + (n % 2) * 4 - 2, bag2Y + n * 3, 2.3, 0, Math.PI * 2);
           ctx.fill();
         }
-        ctx.fillStyle = isStatic ? '#14b8a6' : '#94a3b8';
-        ctx.font = 'bold 10px sans-serif';
-        ctx.fillText('2. Static Nuclear Bag 2 (Length L)', spLeft + 20, bag2Y - 12);
+
+        ctx.fillStyle = '#a855f7';
+        ctx.font = '8px sans-serif';
+        ctx.fillText('γs-polar drive', spLeft + 175, bag2Y + 14);
 
         // 3. Nuclear Chain Fibers (Single file nuclei - Length sensitive L)
-        const chainY = spTop + 225;
+        const chainY = spTop + 235;
+        ctx.fillStyle = isStatic ? '#f59e0b' : '#94a3b8';
+        ctx.font = 'bold 10px sans-serif';
+        ctx.fillText('3. Nuclear Chain Fiber (Single File L)', spLeft + 14, chainY - 12);
+
         ctx.fillStyle = isStatic ? 'rgba(245, 158, 11, 0.25)' : 'rgba(180, 83, 9, 0.15)';
         ctx.strokeStyle = isStatic ? '#f59e0b' : '#d97706';
         ctx.lineWidth = isStatic ? 2 : 1.5;
         ctx.beginPath();
-        ctx.roundRect(spLeft + 20, chainY - 6, 190, 12, 6);
+        ctx.roundRect(spLeft + 15, chainY - 6, 220, 12, 6);
         ctx.fill(); ctx.stroke();
 
         // Single file row of nuclei
         ctx.fillStyle = isStatic ? '#fde68a' : '#fbbf24';
-        for (let c = 0; c < 8; c++) {
+        for (let c = 0; c < 9; c++) {
           ctx.beginPath();
-          ctx.arc(spLeft + 75 + c * 10, chainY, 2.5, 0, Math.PI * 2);
+          ctx.arc(spLeft + 85 + c * 10, chainY, 2.5, 0, Math.PI * 2);
           ctx.fill();
         }
-        ctx.fillStyle = isStatic ? '#f59e0b' : '#94a3b8';
-        ctx.font = 'bold 10px sans-serif';
-        ctx.fillText('3. Nuclear Chain Fiber (Single File L)', spLeft + 20, chainY - 10);
 
-        // Fusimotor γ-Motor End Plates (Polar Contractile Ends)
         ctx.fillStyle = '#a855f7';
         ctx.font = '8px sans-serif';
-        ctx.fillText('γd-polar drive', spLeft + 22, bag1Y + 12);
-        ctx.fillText('γs-polar drive', spLeft + 22, bag2Y + 12);
-        ctx.fillText('γs-polar drive', spLeft + 22, chainY + 14);
+        ctx.fillText('γs-polar drive', spLeft + 175, chainY + 15);
 
         // Annulospiral Ia Coil (wraps around Bag 1, Bag 2 & Chain equators)
         ctx.strokeStyle = '#38bdf8';
         ctx.lineWidth = 2.5;
         for (let loop = -1; loop <= 1; loop++) {
           ctx.beginPath();
-          ctx.ellipse(spLeft + 115 + loop * 8, bag1Y, 4, 15, 0, 0, Math.PI * 2);
+          ctx.ellipse(spLeft + 125 + loop * 8, bag1Y, 4, 15, 0, 0, Math.PI * 2);
           ctx.stroke();
           ctx.beginPath();
-          ctx.ellipse(spLeft + 115 + loop * 8, bag2Y, 3.5, 13, 0, 0, Math.PI * 2);
+          ctx.ellipse(spLeft + 125 + loop * 8, bag2Y, 3.5, 13, 0, 0, Math.PI * 2);
           ctx.stroke();
           ctx.beginPath();
-          ctx.ellipse(spLeft + 115 + loop * 8, chainY, 3, 9, 0, 0, Math.PI * 2);
+          ctx.ellipse(spLeft + 125 + loop * 8, chainY, 3, 9, 0, 0, Math.PI * 2);
           ctx.stroke();
         }
 
         // Status Banner under Spindle
         ctx.fillStyle = isTap ? '#ef4444' : (isStatic ? '#14b8a6' : '#64748b');
-        ctx.font = 'bold 10px sans-serif';
+        ctx.font = 'bold 9.5px sans-serif';
         if (isTap) {
-          ctx.fillText('⚡ Piezo2 OPEN! High-velocity dL/dt burst', spLeft + 12, spTop + spHeight - 12);
+          ctx.fillText('⚡ Piezo2 OPEN! High-velocity dL/dt burst', spLeft + 14, spTop + spHeight - 14);
         } else if (isStatic) {
-          ctx.fillText('📐 Piezo2 Tonic: Group Ia & II Length Train', spLeft + 12, spTop + spHeight - 12);
+          ctx.fillText('📐 Piezo2 Tonic: Group Ia & II Length Train', spLeft + 14, spTop + spHeight - 14);
         } else {
-          ctx.fillText('Tonic Baseline Spindle Rest Firing (15 Hz)', spLeft + 12, spTop + spHeight - 12);
+          ctx.fillText('Tonic Baseline Spindle Rest Firing (15 Hz)', spLeft + 14, spTop + spHeight - 14);
         }
 
         // ==========================================
         // RIGHT HALF: SPINAL CORD BUTTERFLY & SYNAPTIC CONNECTIONS
         // ==========================================
-        const cx = 500, cy = 180;
+        const cx = 560, cy = 190;
         
         // Spinal Cord Outline
         ctx.fillStyle = '#0a0f1d';
         ctx.strokeStyle = '#334155';
         ctx.lineWidth = 2;
         ctx.beginPath();
-        ctx.arc(cx, cy, 140, 0, Math.PI * 2);
+        ctx.arc(cx, cy, 145, 0, Math.PI * 2);
         ctx.fill(); ctx.stroke();
 
         // Grey matter butterfly
         ctx.fillStyle = '#1e293b';
         ctx.beginPath();
-        ctx.ellipse(cx - 45, cy - 40, 26, 48, Math.PI / 6, 0, Math.PI * 2);
-        ctx.ellipse(cx - 50, cy + 40, 40, 36, -Math.PI / 6, 0, Math.PI * 2);
-        ctx.ellipse(cx + 45, cy - 40, 26, 48, -Math.PI / 6, 0, Math.PI * 2);
-        ctx.ellipse(cx + 50, cy + 40, 40, 36, Math.PI / 6, 0, Math.PI * 2);
+        ctx.ellipse(cx - 48, cy - 40, 26, 48, Math.PI / 6, 0, Math.PI * 2);
+        ctx.ellipse(cx - 52, cy + 42, 42, 38, -Math.PI / 6, 0, Math.PI * 2);
+        ctx.ellipse(cx + 48, cy - 40, 26, 48, -Math.PI / 6, 0, Math.PI * 2);
+        ctx.ellipse(cx + 52, cy + 42, 42, 38, Math.PI / 6, 0, Math.PI * 2);
         ctx.fill();
 
         // Central canal
@@ -2151,22 +2158,22 @@
         ctx.beginPath(); ctx.arc(cx, cy, 5, 0, Math.PI * 2); ctx.fill();
 
         // Dorsal Root Ganglion (DRG)
-        const drgX = 345, drgY = cy - 70;
+        const drgX = 390, drgY = cy - 70;
         ctx.fillStyle = '#1e293b';
         ctx.strokeStyle = '#38bdf8';
         ctx.lineWidth = 2;
-        ctx.beginPath(); ctx.arc(drgX, drgY, 15, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+        ctx.beginPath(); ctx.arc(drgX, drgY, 16, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
         ctx.fillStyle = '#38bdf8';
-        ctx.font = 'bold 9px sans-serif';
-        ctx.fillText('DRG', drgX - 10, drgY + 3);
+        ctx.font = 'bold 10px sans-serif';
+        ctx.fillText('DRG', drgX - 11, drgY + 3.5);
 
         // Group Ia Afferent Fiber from Spindle Equator to DRG
-        const iaStartEquatorX = spLeft + 115, iaStartEquatorY = bag1Y;
+        const iaStartEquatorX = spLeft + 125, iaStartEquatorY = bag1Y;
         ctx.strokeStyle = '#38bdf8';
         ctx.lineWidth = 2.5;
         ctx.beginPath();
         ctx.moveTo(iaStartEquatorX, iaStartEquatorY);
-        ctx.bezierCurveTo(spLeft + 220, iaStartEquatorY - 35, drgX - 60, drgY - 20, drgX - 15, drgY);
+        ctx.bezierCurveTo(spLeft + 250, iaStartEquatorY - 35, drgX - 70, drgY - 20, drgX - 16, drgY);
         ctx.stroke();
 
         // Group II Afferent Fiber from Bag 2/Chain to DRG
@@ -2174,53 +2181,53 @@
         ctx.lineWidth = 1.8;
         ctx.setLineDash([4, 3]);
         ctx.beginPath();
-        ctx.moveTo(spLeft + 115, bag2Y);
-        ctx.bezierCurveTo(spLeft + 230, bag2Y + 15, drgX - 40, drgY + 25, drgX - 15, drgY);
+        ctx.moveTo(spLeft + 125, bag2Y);
+        ctx.bezierCurveTo(spLeft + 255, bag2Y + 20, drgX - 50, drgY + 30, drgX - 16, drgY);
         ctx.stroke();
-        ctx.setLineDash([]); // reset dash
+        ctx.setLineDash([]);
 
-        // Dedicated Pill Badges for Afferents (Positioned above fibers, outside the box)
+        // Dedicated Pill Badges for Afferents
         // Group Ia Badge
-        ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
         ctx.strokeStyle = '#38bdf8';
         ctx.lineWidth = 1;
         ctx.beginPath();
-        ctx.roundRect(spLeft + 110, 10, 135, 18, 4);
+        ctx.roundRect(285, 18, 140, 20, 5);
         ctx.fill(); ctx.stroke();
         ctx.fillStyle = '#38bdf8';
-        ctx.font = 'bold 9px sans-serif';
-        ctx.fillText('Group Ia (Annulospiral)', spLeft + 116, 22);
+        ctx.font = 'bold 9.5px sans-serif';
+        ctx.fillText('Group Ia (Annulospiral)', 292, 31);
 
         // Group II Badge
-        ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
         ctx.strokeStyle = '#2dd4bf';
         ctx.beginPath();
-        ctx.roundRect(spLeft + spWidth + 10, bag2Y + 8, 120, 18, 4);
+        ctx.roundRect(285, bag2Y + 12, 135, 20, 5);
         ctx.fill(); ctx.stroke();
         ctx.fillStyle = '#2dd4bf';
-        ctx.font = 'bold 9px sans-serif';
-        ctx.fillText('Group II (Flower-spray)', spLeft + spWidth + 15, bag2Y + 20);
+        ctx.font = 'bold 9.5px sans-serif';
+        ctx.fillText('Group II (Flower-spray)', 292, bag2Y + 25);
 
         // Sensory Fiber from DRG entering Dorsal Horn
-        const dorsalHornX = cx - 45, dorsalHornY = cy - 40;
+        const dorsalHornX = cx - 48, dorsalHornY = cy - 40;
         ctx.strokeStyle = '#38bdf8';
         ctx.lineWidth = 2.5;
         ctx.beginPath();
-        ctx.moveTo(drgX + 15, drgY);
-        ctx.quadraticCurveTo(cx - 90, cy - 65, dorsalHornX, dorsalHornY);
+        ctx.moveTo(drgX + 16, drgY);
+        ctx.quadraticCurveTo(cx - 95, cy - 65, dorsalHornX, dorsalHornY);
         ctx.stroke();
 
-        // Action potential speed multiplier based on stimulus
+        // Action potential speed multiplier
         let apSpeed = 2.0;
-        if (isTap) apSpeed = 6.5; // Rapid dynamic firing burst
+        if (isTap) apSpeed = 6.5;
         else if (isStatic) apSpeed = 3.5;
 
-        // Draw animated traveling action potentials on Ia fiber
-        drawPathway(ctx, iaStartEquatorX, iaStartEquatorY, drgX - 15, drgY, '#38bdf8', apSpeed, segmentalAnimTime);
-        drawPathway(ctx, drgX + 15, drgY, dorsalHornX, dorsalHornY, '#38bdf8', apSpeed, segmentalAnimTime);
+        // Draw animated traveling action potentials
+        drawPathway(ctx, iaStartEquatorX, iaStartEquatorY, drgX - 16, drgY, '#38bdf8', apSpeed, segmentalAnimTime);
+        drawPathway(ctx, drgX + 16, drgY, dorsalHornX, dorsalHornY, '#38bdf8', apSpeed, segmentalAnimTime);
 
         // Agonist α-Motor Neuron (Rexed Lamina IX)
-        const mnX = cx - 50, mnY = cy + 40;
+        const mnX = cx - 52, mnY = cy + 42;
         ctx.fillStyle = isTap ? '#059669' : '#047857';
         ctx.strokeStyle = '#34d399';
         ctx.lineWidth = 2;
@@ -2235,20 +2242,20 @@
         ctx.lineWidth = 3;
         ctx.beginPath();
         ctx.moveTo(mnX, mnY + 15);
-        ctx.quadraticCurveTo(cx - 100, cy + 90, 260, cy + 90);
+        ctx.quadraticCurveTo(cx - 100, cy + 95, 300, cy + 95);
         ctx.stroke();
-        drawPathway(ctx, mnX, mnY + 15, 260, cy + 90, '#34d399', motorSpeed, segmentalAnimTime);
+        drawPathway(ctx, mnX, mnY + 15, 300, cy + 95, '#34d399', motorSpeed, segmentalAnimTime);
 
-        // Agonist Twitch Output Pill Badge
+        // Agonist Twitch Output Pill Badge (Bottom open space)
         ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
         ctx.strokeStyle = '#10b981';
         ctx.lineWidth = 1;
         ctx.beginPath();
-        ctx.roundRect(250, cy + 98, 175, 20, 5);
+        ctx.roundRect(285, cy + 105, 175, 22, 5);
         ctx.fill(); ctx.stroke();
         ctx.fillStyle = '#34d399';
-        ctx.font = 'bold 9px sans-serif';
-        ctx.fillText('Aα Efferent → Agonist Twitch', 256, cy + 112);
+        ctx.font = 'bold 9.5px sans-serif';
+        ctx.fillText('Aα Efferent → Agonist Twitch', 293, cy + 120);
 
         // ==========================================
         // SYNAPTIC CIRCUITS (BRANCHING LOGIC)
@@ -2257,56 +2264,56 @@
           // MONOSYNAPTIC BRANCH: Direct synapse to α-MN
           drawPathway(ctx, dorsalHornX, dorsalHornY, mnX, mnY - 15, '#38bdf8', apSpeed, segmentalAnimTime);
           
-          // Synaptic Cleft Glow / Neurotransmitter Callout
+          // Synaptic Cleft Glow
           ctx.fillStyle = '#facc15';
           ctx.beginPath();
           ctx.arc(mnX, mnY - 15, 5, 0, Math.PI * 2);
           ctx.fill();
 
-          // Monosynaptic Pill Tag (Placed neatly in open space to the left of alpha-MN)
-          ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+          // Monosynaptic Pill Tag
+          ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
           ctx.strokeStyle = '#facc15';
           ctx.lineWidth = 1;
           ctx.beginPath();
-          ctx.roundRect(cx - 215, cy - 8, 155, 22, 5);
+          ctx.roundRect(cx - 240, cy - 10, 165, 22, 5);
           ctx.fill(); ctx.stroke();
           ctx.fillStyle = '#fde047';
-          ctx.font = 'bold 9px sans-serif';
-          ctx.fillText('Monosynaptic (Glutamate)', cx - 208, cy + 6);
+          ctx.font = 'bold 9.5px sans-serif';
+          ctx.fillText('Monosynaptic (Glutamate)', cx - 232, cy + 4);
         } else if (cType === 'reciprocal') {
           // DISYNAPTIC RECIPROCAL INHIBITION BRANCH
           drawPathway(ctx, dorsalHornX, dorsalHornY, mnX, mnY - 15, '#38bdf8', apSpeed, segmentalAnimTime);
 
           // Ia Inhibitory Interneuron (Rexed Lamina VII)
-          const inX = cx - 15, inY = cy;
+          const inX = cx - 12, inY = cy;
           ctx.fillStyle = '#0284c7';
           ctx.beginPath(); ctx.arc(inX, inY, 12, 0, Math.PI * 2); ctx.fill();
           ctx.fillStyle = '#ffffff'; ctx.font = '9px sans-serif'; ctx.fillText('Ia-IN', inX - 10, inY + 3);
 
-          // Afferent to Ia-IN (Glutamate excitation)
+          // Afferent to Ia-IN
           drawPathway(ctx, dorsalHornX, dorsalHornY, inX, inY, '#38bdf8', apSpeed, segmentalAnimTime);
 
           // Antagonist Motor Neuron (Right ventral horn)
-          const antMnX = cx + 50, antMnY = cy + 40;
+          const antMnX = cx + 52, antMnY = cy + 42;
           ctx.fillStyle = '#dc2626';
           ctx.beginPath(); ctx.arc(antMnX, antMnY, 14, 0, Math.PI * 2); ctx.fill();
-          ctx.fillStyle = '#ffffff'; ctx.font = '9px sans-serif'; ctx.fillText('Antag', antMnX - 11, antMnY + 3);
+          ctx.fillStyle = '#ffffff'; ctx.font = '9px sans-serif'; ctx.fillText('Antag', antMnX - 12, antMnY + 3);
 
           // Glycinergic IPSP inhibitory pathway to Antagonist
           drawPathway(ctx, inX, inY, antMnX - 10, antMnY, '#ef4444', apSpeed, segmentalAnimTime);
           
-          ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+          ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
           ctx.strokeStyle = '#ef4444';
           ctx.lineWidth = 1;
           ctx.beginPath();
-          ctx.roundRect(cx - 10, cy + 22, 140, 20, 5);
+          ctx.roundRect(cx - 10, cy + 22, 145, 22, 5);
           ctx.fill(); ctx.stroke();
           ctx.fillStyle = '#f87171';
-          ctx.font = 'bold 9px sans-serif';
-          ctx.fillText('Glycine IPSP (Inhibition)', cx - 4, cy + 36);
+          ctx.font = 'bold 9.5px sans-serif';
+          ctx.fillText('Glycine IPSP (Inhibition)', cx - 3, cy + 36);
         } else if (cType === 'autogenic') {
           // GTO Ib Inhibitory Interneuron
-          const ibInX = cx - 15, ibInY = cy - 10;
+          const ibInX = cx - 12, ibInY = cy - 10;
           ctx.fillStyle = '#d97706';
           ctx.beginPath(); ctx.arc(ibInX, ibInY, 12, 0, Math.PI * 2); ctx.fill();
           ctx.fillStyle = '#ffffff'; ctx.font = '9px sans-serif'; ctx.fillText('Ib-IN', ibInX - 10, ibInY + 3);
@@ -2314,18 +2321,18 @@
           drawPathway(ctx, dorsalHornX, dorsalHornY, ibInX, ibInY, '#f59e0b', 3, segmentalAnimTime);
           drawPathway(ctx, ibInX, ibInY, mnX + 10, mnY - 10, '#ef4444', 3, segmentalAnimTime);
           
-          ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+          ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
           ctx.strokeStyle = '#f59e0b';
           ctx.lineWidth = 1;
           ctx.beginPath();
-          ctx.roundRect(cx - 215, cy - 8, 155, 22, 5);
+          ctx.roundRect(cx - 240, cy - 10, 165, 22, 5);
           ctx.fill(); ctx.stroke();
           ctx.fillStyle = '#fbbf24';
-          ctx.font = 'bold 9px sans-serif';
-          ctx.fillText('Ib-IN Shutdown (Ceiling)', cx - 208, cy + 6);
+          ctx.font = 'bold 9.5px sans-serif';
+          ctx.fillText('Ib-IN Shutdown (Ceiling)', cx - 232, cy + 4);
         } else if (cType === 'renshaw') {
           // Renshaw Cell Circuit
-          const renX = cx - 95, renY = cy + 35;
+          const renX = cx - 98, renY = cy + 35;
           ctx.fillStyle = '#6366f1';
           ctx.beginPath(); ctx.arc(renX, renY, 13, 0, Math.PI * 2); ctx.fill();
           ctx.fillStyle = '#ffffff'; ctx.font = '9px sans-serif'; ctx.fillText('Rensh', renX - 11, renY + 3);
@@ -2333,15 +2340,15 @@
           drawPathway(ctx, mnX - 15, mnY, renX + 13, renY, '#a855f7', 3, segmentalAnimTime);
           drawPathway(ctx, renX + 8, renY - 10, mnX - 8, mnY - 10, '#ef4444', 3, segmentalAnimTime);
           
-          ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+          ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
           ctx.strokeStyle = '#818cf8';
           ctx.lineWidth = 1;
           ctx.beginPath();
-          ctx.roundRect(renX - 95, renY + 16, 130, 20, 5);
+          ctx.roundRect(renX - 98, renY + 16, 135, 22, 5);
           ctx.fill(); ctx.stroke();
           ctx.fillStyle = '#a5b4fc';
-          ctx.font = 'bold 9px sans-serif';
-          ctx.fillText('Renshaw Glycine Loop', renX - 90, renY + 30);
+          ctx.font = 'bold 9.5px sans-serif';
+          ctx.fillText('Renshaw Glycine Loop', renX - 92, renY + 31);
         } else if (cType === 'presynaptic') {
           // GABAergic Presynaptic Interneuron (PAD)
           const gabaX = dorsalHornX - 25, gabaY = dorsalHornY + 25;
@@ -2349,7 +2356,7 @@
           ctx.beginPath(); ctx.arc(gabaX, gabaY, 12, 0, Math.PI * 2); ctx.fill();
           ctx.fillStyle = '#ffffff'; ctx.font = '9px sans-serif'; ctx.fillText('GABA', gabaX - 11, gabaY + 3);
 
-          // Descending LRST fiber driving GABA neuron
+          // Descending LRST fiber
           ctx.strokeStyle = '#06b6d4';
           ctx.lineWidth = 2;
           ctx.beginPath();
@@ -2357,27 +2364,27 @@
           ctx.lineTo(gabaX + 10, gabaY);
           ctx.stroke();
           
-          ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+          ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
           ctx.strokeStyle = '#06b6d4';
           ctx.lineWidth = 1;
           ctx.beginPath();
-          ctx.roundRect(cx + 8, 38, 120, 18, 4);
+          ctx.roundRect(cx + 8, 38, 130, 20, 5);
           ctx.fill(); ctx.stroke();
           ctx.fillStyle = '#38bdf8';
-          ctx.font = 'bold 9px sans-serif';
-          ctx.fillText('Descending LRST Drive', cx + 14, 50);
+          ctx.font = 'bold 9.5px sans-serif';
+          ctx.fillText('Descending LRST Drive', cx + 14, 51);
 
           drawPathway(ctx, gabaX, gabaY, dorsalHornX, dorsalHornY, '#10b981', 2, segmentalAnimTime);
 
-          ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+          ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
           ctx.strokeStyle = '#10b981';
           ctx.lineWidth = 1;
           ctx.beginPath();
-          ctx.roundRect(cx - 215, cy - 35, 145, 22, 5);
+          ctx.roundRect(cx - 240, cy - 35, 155, 22, 5);
           ctx.fill(); ctx.stroke();
           ctx.fillStyle = '#34d399';
-          ctx.font = 'bold 9px sans-serif';
-          ctx.fillText('Presynaptic PAD Gating', cx - 208, cy - 21);
+          ctx.font = 'bold 9.5px sans-serif';
+          ctx.fillText('Presynaptic PAD Gating', cx - 232, cy - 20);
         }
 
         requestAnimationFrame(renderCircuit);
