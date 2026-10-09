@@ -758,29 +758,61 @@
     <!-- TAB 3: BIOMECHANICAL STRETCH REFLEX & CATCH ENGINE -->
     <!-- ========================================================================= -->
     <div id="view-stretch" class="space-y-6 hidden">
+      <!-- Physiology Mode Selector Banner -->
+      <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 p-4 rounded-xl border border-slate-700/80 shadow-lg flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-xs px-2.5 py-0.5 rounded-full bg-teal-500/20 text-teal-300 border border-teal-500/30 font-bold uppercase tracking-wider">Comparative Lab</span>
+            <h2 class="text-base font-bold text-white">Normal Muscle Physiology vs. Spastic Hypertonia</h2>
+          </div>
+          <p class="text-xs text-slate-400">Directly compare intact presynaptic sensory gating and reciprocal inhibition against upper motor neuron disinhibition and velocity-dependent catch.</p>
+        </div>
+
+        <div class="flex items-center gap-2 bg-slate-950/80 p-1.5 rounded-xl border border-slate-800">
+          <button onclick="setMusclePhysioMode('normal')" id="btn-mode-normal" class="physio-mode-btn px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 text-slate-300 hover:text-white">
+            <span class="w-2 h-2 rounded-full bg-emerald-400"></span> Normal Control
+          </button>
+          <button onclick="setMusclePhysioMode('spastic')" id="btn-mode-spastic" class="physio-mode-btn px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 bg-red-600 text-white shadow-md shadow-red-600/30">
+            <span class="w-2 h-2 rounded-full bg-white"></span> Spastic (UMNS)
+          </button>
+          <button onclick="setMusclePhysioMode('compare')" id="btn-mode-compare" class="physio-mode-btn px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 text-slate-300 hover:text-white">
+            <span class="w-2 h-2 rounded-full bg-cyan-400"></span> ⚖️ Side-by-Side Dual View
+          </button>
+        </div>
+      </div>
+
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Interactive Controls -->
         <div class="bg-slate-900/80 rounded-xl p-5 border border-slate-800 space-y-5">
-          <div>
-            <h3 class="text-sm font-bold uppercase tracking-wider text-teal-400 mb-1">Biomechanics & Catch Simulator</h3>
-            <p class="text-xs text-slate-400">Manipulate passive elbow extension velocity to demonstrate the classic Lance velocity-dependent "Catch" and calculate Tardieu angles.</p>
+          <!-- Active Mode Card Info -->
+          <div id="mode-info-card" class="p-3.5 rounded-xl border transition space-y-1.5 bg-red-500/10 border-red-500/30 text-red-200">
+            <div class="flex items-center justify-between">
+              <span id="mode-info-title" class="text-xs font-bold uppercase tracking-wider text-red-300">Spastic Muscle State (UMNS)</span>
+              <span id="mode-info-tag" class="px-2 py-0.5 rounded text-[10px] font-bold bg-red-500/20 text-red-300 border border-red-500/40">Loss of LRST Brake</span>
+            </div>
+            <p id="mode-info-desc" class="text-[11px] text-slate-300 leading-relaxed">
+              Disrupted corticobulbar drive shuts down medullary inhibitory reticulospinal (LRST) tract. Presynaptic gating of Ia afferents fails, motoneuronal persistent inward currents (PICs) activate, and rapid stretch triggers a sudden velocity-dependent catch.
+            </p>
           </div>
 
           <!-- Velocity Selector -->
           <div class="space-y-2">
-            <label class="text-xs font-semibold text-slate-300">Tardieu Stretch Velocity (→V→):</label>
+            <div class="flex justify-between items-center text-xs">
+              <label class="font-semibold text-slate-300">Tardieu Stretch Velocity (V):</label>
+              <span id="label-vel-desc" class="text-[11px] text-slate-400">V3 = Rapid stretch</span>
+            </div>
             <div class="grid grid-cols-3 gap-2">
               <button onclick="setStretchVelocity('V1')" id="btn-v1" class="v-btn py-2 px-1 text-center rounded-lg border border-slate-700 bg-slate-800 text-xs font-semibold hover:bg-slate-700 transition">
                 <div class="text-teal-400 font-bold">V1</div>
-                <div class="text-[10px] text-slate-400">Very Slow</div>
+                <div class="text-[10px] text-slate-400">Very Slow (10°/s)</div>
               </button>
               <button onclick="setStretchVelocity('V2')" id="btn-v2" class="v-btn py-2 px-1 text-center rounded-lg border border-slate-700 bg-slate-800 text-xs font-semibold hover:bg-slate-700 transition">
                 <div class="text-cyan-400 font-bold">V2</div>
-                <div class="text-[10px] text-slate-400">Natural Speed</div>
+                <div class="text-[10px] text-slate-400">Gravity Fall (60°/s)</div>
               </button>
               <button onclick="setStretchVelocity('V3')" id="btn-v3" class="v-btn py-2 px-1 text-center rounded-lg border border-teal-500 bg-teal-500/20 text-xs font-semibold transition">
                 <div class="text-red-400 font-bold">V3</div>
-                <div class="text-[10px] text-slate-400">Fast Stretch</div>
+                <div class="text-[10px] text-slate-400">Fast Snap (180°/s)</div>
               </button>
             </div>
           </div>
@@ -788,13 +820,34 @@
           <!-- Dynamic Manual Angle Slider -->
           <div class="space-y-2">
             <div class="flex justify-between items-center text-xs">
-              <span class="font-semibold text-slate-300">Passive Extension Angle:</span>
-              <span id="label-angle-display" class="font-mono text-teal-400 font-bold">30° (Flexed)</span>
+              <span class="font-semibold text-slate-300">Elbow Joint Position:</span>
+              <span id="label-angle-display" class="font-mono text-teal-400 font-bold">120° (Flexed)</span>
             </div>
-            <input type="range" id="slider-elbow-angle" min="20" max="150" value="30" class="w-full accent-teal-500 cursor-pointer" oninput="updateLimbManualAngle(this.value)">
+            <input type="range" id="slider-elbow-angle" min="0" max="140" value="120" class="w-full accent-teal-500 cursor-pointer" oninput="updateLimbManualAngle(this.value)">
             <div class="flex justify-between text-[10px] text-slate-500">
-              <span>Full Flexion (20°)</span>
-              <span>Full Extension (150°)</span>
+              <span>Full Extension (0°)</span>
+              <span>Full Flexion (140°)</span>
+            </div>
+          </div>
+
+          <!-- Advanced Neurophysiological Sliders -->
+          <div class="space-y-3 pt-1 border-t border-slate-800 text-xs">
+            <span class="font-bold text-slate-300 uppercase tracking-wider text-[11px] block">Physiological Tuning</span>
+            
+            <div class="space-y-1">
+              <div class="flex justify-between text-[11px]">
+                <span class="text-slate-400">Presynaptic Ia Gating (PAD):</span>
+                <span id="label-pad-efficiency" class="font-mono text-cyan-400 font-bold">20% (Impaired)</span>
+              </div>
+              <input type="range" id="slider-pad" min="0" max="100" value="20" class="w-full accent-cyan-500 cursor-pointer" oninput="updatePhysioParam('pad', this.value)">
+            </div>
+
+            <div class="space-y-1">
+              <div class="flex justify-between text-[11px]">
+                <span class="text-slate-400">Persistent Inward Current (PIC) Gain:</span>
+                <span id="label-pic-gain" class="font-mono text-amber-400 font-bold">3.8x (Exaggerated)</span>
+              </div>
+              <input type="range" id="slider-pic" min="10" max="50" value="38" class="w-full accent-amber-500 cursor-pointer" oninput="updatePhysioParam('pic', this.value)">
             </div>
           </div>
 
@@ -804,9 +857,14 @@
               <span>⚡ Execute Stretch</span>
             </button>
             <button onclick="resetJoint()" class="py-2.5 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs border border-slate-700 transition">
-              <span>↺ Reset Position</span>
+              <span>↺ Reset (Flexed)</span>
             </button>
           </div>
+
+          <!-- Clonus Trigger Button (Spastic only) -->
+          <button id="btn-trigger-clonus" onclick="toggleClonus()" class="w-full py-2 px-3 rounded-lg border border-purple-500/40 bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 font-bold text-xs transition flex items-center justify-center gap-2">
+            <span>🔄 Elicit Rhythmic Clonus (5–7 Hz)</span>
+          </button>
 
           <!-- Tardieu Clinical Scorecard -->
           <div class="p-4 rounded-lg bg-slate-800/60 border border-slate-700/60 space-y-2.5 text-xs">
@@ -815,19 +873,19 @@
               <span id="tardieu-status-badge" class="px-2 py-0.5 rounded text-[10px] font-bold bg-red-500/20 text-red-300 border border-red-500/30">Catch Detected</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-slate-400">Angle of Catch at V3 (→R_1→):</span>
-              <span id="tardieu-r1" class="font-mono font-bold text-red-400">68°</span>
+              <span class="text-slate-400">Angle of Catch at V3 (R₁):</span>
+              <span id="tardieu-r1" class="font-mono font-bold text-red-400">65° Flexion</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-slate-400">Full Slow ROM at V1 (→R_2→):</span>
-              <span id="tardieu-r2" class="font-mono font-bold text-teal-400">145°</span>
+              <span class="text-slate-400">Full Slow ROM at V1 (R₂):</span>
+              <span id="tardieu-r2" class="font-mono font-bold text-teal-400">0° (Full Extension)</span>
             </div>
             <div class="flex justify-between items-center pt-1.5 border-t border-slate-700 font-semibold">
-              <span class="text-slate-200">Dynamic Component (→R_2 - R_1→):</span>
-              <span id="tardieu-diff" class="font-mono text-emerald-400 text-sm font-extrabold">77°</span>
+              <span class="text-slate-200">Dynamic Component (R₂ - R₁):</span>
+              <span id="tardieu-diff" class="font-mono text-emerald-400 text-sm font-extrabold">65°</span>
             </div>
-            <div class="text-[11px] text-slate-400 leading-tight pt-1">
-              <strong>Clinical Deduction:</strong> Since →R_2 - R_1 > 20^\circ→, this resistance is driven by <em>Dynamic Neural Spasticity</em> rather than fixed contracture. The patient is an ideal candidate for focal Botulinum Toxin or pharmacological tone reduction.
+            <div id="tardieu-deduction" class="text-[11px] text-slate-400 leading-tight pt-1">
+              <strong>Clinical Deduction:</strong> Since R₂ - R₁ > 20°, this resistance is driven by <em>Dynamic Neural Spasticity</em> rather than fixed contracture. The patient is an ideal candidate for focal Botulinum Toxin or pharmacological tone reduction.
             </div>
           </div>
         </div>
@@ -837,30 +895,122 @@
           <!-- Anatomical Arm Simulation Canvas -->
           <div class="bg-slate-900/80 rounded-xl p-4 border border-slate-800">
             <div class="flex justify-between items-center mb-2">
-              <h3 class="text-sm font-bold text-white flex items-center gap-2">
-                <span>Simulated Upper Extremity Passive Stretch</span>
-                <span id="catch-indicator-tag" class="hidden px-2 py-0.5 rounded-full bg-red-500/30 text-red-300 border border-red-500/50 text-[10px] font-bold animate-pulse">SUDDEN CATCH!</span>
-              </h3>
-              <span class="text-xs text-slate-400">Biceps Brachii (Agonist) & Triceps</span>
+              <div class="flex items-center gap-2">
+                <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                  <span>Sagittal Limb Biomechanics</span>
+                  <span id="catch-indicator-tag" class="hidden px-2 py-0.5 rounded-full bg-red-500/30 text-red-300 border border-red-500/50 text-[10px] font-bold animate-pulse">SUDDEN CATCH!</span>
+                  <span id="clonus-indicator-tag" class="hidden px-2 py-0.5 rounded-full bg-purple-500/30 text-purple-300 border border-purple-500/50 text-[10px] font-bold animate-pulse">SUSTAINED CLONUS (6 Hz)</span>
+                </h3>
+              </div>
+              <div class="flex items-center gap-3 text-xs">
+                <span class="flex items-center gap-1.5 text-slate-300"><span class="w-3 h-1.5 bg-teal-400 rounded-sm inline-block"></span> Anterior Biceps (Top)</span>
+                <span class="flex items-center gap-1.5 text-slate-400"><span class="w-3 h-1.5 bg-slate-500 rounded-sm inline-block"></span> Posterior Triceps (Bottom)</span>
+              </div>
             </div>
-            <div class="w-full h-[240px] bg-[#060c1d] rounded-xl border border-slate-800 overflow-hidden relative">
-              <canvas id="armCanvas" width="700" height="240" class="w-full h-full block"></canvas>
+            <div class="w-full h-[280px] bg-[#060c1d] rounded-xl border border-slate-800 overflow-hidden relative">
+              <canvas id="armCanvas" width="700" height="280" class="w-full h-full block"></canvas>
             </div>
           </div>
 
-          <!-- Real-Time Waveform Oscilloscope -->
-          <div class="bg-slate-900/80 rounded-xl p-4 border border-slate-800">
-            <div class="flex justify-between items-center mb-2">
-              <h3 class="text-sm font-bold text-white">Live Neuro-Biomechanical Tracing</h3>
+          <!-- Real-Time Waveform Oscilloscope & Multi-Channel Telemetry -->
+          <div class="bg-slate-900/80 rounded-xl p-4 border border-slate-800 space-y-2">
+            <div class="flex justify-between items-center">
+              <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                <span>Synchronized Multi-Channel Electrophysiology</span>
+              </h3>
               <div class="flex items-center gap-3 text-[11px]">
-                <span class="flex items-center gap-1 text-teal-400"><span class="w-2.5 h-0.5 bg-teal-400 inline-block"></span> Spindle Ia Firing</span>
-                <span class="flex items-center gap-1 text-red-400"><span class="w-2.5 h-0.5 bg-red-400 inline-block"></span> Resistance Force (N)</span>
+                <span class="flex items-center gap-1 text-cyan-400"><span class="w-2.5 h-0.5 bg-cyan-400 inline-block"></span> Ia Firing (Hz)</span>
+                <span class="flex items-center gap-1 text-amber-400"><span class="w-2.5 h-0.5 bg-amber-400 inline-block"></span> PIC/Plateau (mV)</span>
+                <span class="flex items-center gap-1 text-emerald-400"><span class="w-2.5 h-0.5 bg-emerald-400 inline-block"></span> sEMG (µV)</span>
+                <span class="flex items-center gap-1 text-red-400"><span class="w-2.5 h-0.5 bg-red-400 inline-block"></span> Force (N)</span>
               </div>
             </div>
             <div class="w-full h-[180px] bg-[#060c1d] rounded-xl border border-slate-800 overflow-hidden">
               <canvas id="oscilloscopeCanvas" width="700" height="180" class="w-full h-full block"></canvas>
             </div>
+            <!-- Telemetry Values Strip -->
+            <div class="grid grid-cols-4 gap-2 text-center text-xs pt-1 border-t border-slate-800/80">
+              <div class="p-1.5 bg-slate-950/60 rounded border border-slate-800">
+                <span class="text-[10px] text-slate-400 block">Spindle Ia Discharge</span>
+                <span id="telemetry-ia" class="font-mono font-bold text-cyan-400">12 Hz</span>
+              </div>
+              <div class="p-1.5 bg-slate-950/60 rounded border border-slate-800">
+                <span class="text-[10px] text-slate-400 block">Motoneuron PIC Level</span>
+                <span id="telemetry-pic" class="font-mono font-bold text-amber-400">-65 mV</span>
+              </div>
+              <div class="p-1.5 bg-slate-950/60 rounded border border-slate-800">
+                <span class="text-[10px] text-slate-400 block">Biceps Surface EMG</span>
+                <span id="telemetry-emg" class="font-mono font-bold text-emerald-400">0 µV</span>
+              </div>
+              <div class="p-1.5 bg-slate-950/60 rounded border border-slate-800">
+                <span class="text-[10px] text-slate-400 block">Joint Resistance Force</span>
+                <span id="telemetry-force" class="font-mono font-bold text-red-400">6 N</span>
+              </div>
+            </div>
           </div>
+        </div>
+      </div>
+
+      <!-- Comparison Matrix Table -->
+      <div class="bg-slate-900/80 rounded-xl p-5 border border-slate-800 space-y-3">
+        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+          <span>🔬 Normal Motor Control vs. Spastic Muscle: Neuro-Biomechanic Comparison Matrix</span>
+        </h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="border-b border-slate-700 bg-slate-800/40 text-slate-300">
+                <th class="p-2.5 font-bold">Physiological Dimension</th>
+                <th class="p-2.5 font-bold text-emerald-400">🟢 Normal Muscle Physiology</th>
+                <th class="p-2.5 font-bold text-red-400">🔴 Spastic Muscle (Upper Motor Neuron Syndrome)</th>
+                <th class="p-2.5 font-bold text-teal-300">Clinical Impact</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800/60 text-slate-300">
+              <tr>
+                <td class="p-2.5 font-semibold text-slate-200">Supraspinal Tonic Control</td>
+                <td class="p-2.5">Intact dorsal reticulospinal tract (LRST) delivers continuous inhibitory brake to anterior horn.</td>
+                <td class="p-2.5 text-red-300">Loss of LRST inhibitory brake; unopposed MRST & LVST hyper-excite extensor/antigravity pools.</td>
+                <td class="p-2.5 text-slate-400">Loss of fractionation, resting hypertonia, stereotyped synergy patterns.</td>
+              </tr>
+              <tr>
+                <td class="p-2.5 font-semibold text-slate-200">Presynaptic Ia Inhibition (PAD)</td>
+                <td class="p-2.5">High efficiency (~90%). Interneurons gate out high-frequency sensory bursts before reaching motoneurons.</td>
+                <td class="p-2.5 text-red-300">Severely deficient (~20%). Ia action potential volleys flood alpha-motoneurons without suppression.</td>
+                <td class="p-2.5 text-slate-400">Primary driver of velocity-dependent hyperreflexia and sudden stretch catch.</td>
+              </tr>
+              <tr>
+                <td class="p-2.5 font-semibold text-slate-200">Persistent Inward Currents (PICs)</td>
+                <td class="p-2.5">Tightly modulated by monoamines and local GABAergic control; normal deactivation.</td>
+                <td class="p-2.5 text-red-300">Uncontrolled dendritic CaV1.3 / NaP channels produce plateau potentials and self-sustained firing.</td>
+                <td class="p-2.5 text-slate-400">Explains prolonged involuntary contractions and spastic dystonia after stimulus ends.</td>
+              </tr>
+              <tr>
+                <td class="p-2.5 font-semibold text-slate-200">Reciprocal Ia Inhibition</td>
+                <td class="p-2.5">Agonist contraction or stretch cleanly silences antagonist via Ia inhibitory interneurons (0% co-contraction).</td>
+                <td class="p-2.5 text-red-300">Degraded or reversed; antagonist fires simultaneously (pathological co-contraction).</td>
+                <td class="p-2.5 text-slate-400">Agonist fights stiff antagonist, causing marked slowness and loss of active dexterity.</td>
+              </tr>
+              <tr>
+                <td class="p-2.5 font-semibold text-slate-200">Recurrent Renshaw Inhibition</td>
+                <td class="p-2.5">Active negative feedback dampens repetitive motoneuronal firing, extinguishing twitches.</td>
+                <td class="p-2.5 text-red-300">Impaired recurrent inhibition fails to brake oscillatory loops.</td>
+                <td class="p-2.5 text-slate-400">Underlies sustained 5–7 Hz rhythmic clonus upon abrupt passive stretch.</td>
+              </tr>
+              <tr>
+                <td class="p-2.5 font-semibold text-slate-200">Response to Rapid Stretch (V3)</td>
+                <td class="p-2.5 text-emerald-300 font-bold">NO CATCH. R₁ = R₂. Smooth full ROM (< 15 N).</td>
+                <td class="p-2.5 text-red-300 font-bold">SUDDEN CATCH at R₁. ΔR > 20°. Resistance surges to > 90 N.</td>
+                <td class="p-2.5 text-slate-400">Defines Lance's velocity-dependent spasticity criterion.</td>
+              </tr>
+              <tr>
+                <td class="p-2.5 font-semibold text-slate-200">Passive Tissue Architecture</td>
+                <td class="p-2.5">Optimal serial sarcomere count, compliant collagen matrix, low passive stiffness.</td>
+                <td class="p-2.5 text-amber-300">Chronic loss of serial sarcomeres (-40%) and dense extracellular collagen fibrosis (+280%).</td>
+                <td class="p-2.5 text-slate-400">Fixed myotendinous stiffness that antispasticity drugs cannot alleviate.</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -1975,14 +2125,149 @@
     }
 
     // ==========================================
-    // MODULE 2: BIOMECHANICAL STRETCH CATCH ENGINE
+    // MODULE 2: BIOMECHANICAL STRETCH & COMPARATIVE PHYSIOLOGY ENGINE
     // ==========================================
-    let armAnimAngle = 30;
-    let armTargetAngle = 30;
+    State.musclePhysioMode = 'spastic'; // 'normal', 'spastic', 'compare'
+    State.presynapticInhibition = 20; // % efficiency
+    State.picGain = 3.8; // multiplier
+    State.isClonusActive = false;
+    State.catchAngle = 65; // degrees flexion
+
+    let armAnimAngle = 120; // Starts in flexed position
+    let armTargetAngle = 120;
     let armStretchSpeed = 0;
     let isStretching = false;
     let catchTriggered = false;
+    let clonusTimer = 0;
     const waveHistory = [];
+
+    // Normal arm state for Side-by-Side Dual View
+    let normalAnimAngle = 120;
+    let normalTargetAngle = 120;
+    let normalIsStretching = false;
+
+    function setMusclePhysioMode(mode) {
+      State.musclePhysioMode = mode;
+      document.querySelectorAll('.physio-mode-btn').forEach(btn => {
+        btn.classList.remove('active', 'bg-red-600', 'bg-emerald-600', 'bg-cyan-600', 'text-white', 'shadow-md');
+        btn.classList.add('text-slate-300');
+      });
+
+      const activeBtn = document.getElementById(`btn-mode-${mode}`);
+      if (activeBtn) {
+        activeBtn.classList.remove('text-slate-300');
+        activeBtn.classList.add('active', 'text-white', 'shadow-md');
+        if (mode === 'normal') activeBtn.classList.add('bg-emerald-600', 'shadow-emerald-600/30');
+        else if (mode === 'spastic') activeBtn.classList.add('bg-red-600', 'shadow-red-600/30');
+        else activeBtn.classList.add('bg-cyan-600', 'shadow-cyan-600/30');
+      }
+
+      const infoCard = document.getElementById('mode-info-card');
+      const infoTitle = document.getElementById('mode-info-title');
+      const infoTag = document.getElementById('mode-info-tag');
+      const infoDesc = document.getElementById('mode-info-desc');
+      const clonusBtn = document.getElementById('btn-trigger-clonus');
+
+      if (mode === 'normal') {
+        State.presynapticInhibition = 90;
+        State.picGain = 1.0;
+        State.isClonusActive = false;
+        infoCard.className = 'p-3.5 rounded-xl border transition space-y-1.5 bg-emerald-500/10 border-emerald-500/30 text-emerald-200';
+        infoTitle.textContent = 'Normal Muscle Physiology';
+        infoTitle.className = 'text-xs font-bold uppercase tracking-wider text-emerald-300';
+        infoTag.textContent = 'Intact LRST Brake';
+        infoTag.className = 'px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40';
+        infoDesc.textContent = 'Intact dorsal reticulospinal (LRST) inhibitory drive. Presynaptic GABAergic inhibition (~90%) suppresses rapid sensory barrages. Motoneuron PICs remain tightly modulated. Limb moves smoothly through full ROM with zero catch (R₁ = R₂ = 0°).';
+        if (clonusBtn) clonusBtn.classList.add('hidden');
+        document.getElementById('slider-pad').value = 90;
+        document.getElementById('label-pad-efficiency').textContent = '90% (Intact)';
+        document.getElementById('slider-pic').value = 10;
+        document.getElementById('label-pic-gain').textContent = '1.0x (Normal)';
+        updateTardieuDisplay(false);
+      } else if (mode === 'spastic') {
+        State.presynapticInhibition = 20;
+        State.picGain = 3.8;
+        infoCard.className = 'p-3.5 rounded-xl border transition space-y-1.5 bg-red-500/10 border-red-500/30 text-red-200';
+        infoTitle.textContent = 'Spastic Hypertonia (UMNS)';
+        infoTitle.className = 'text-xs font-bold uppercase tracking-wider text-red-300';
+        infoTag.textContent = 'Loss of LRST Brake';
+        infoTag.className = 'px-2 py-0.5 rounded text-[10px] font-bold bg-red-500/20 text-red-300 border border-red-500/40';
+        infoDesc.textContent = 'Disrupted corticobulbar drive shuts down medullary MLRF → loss of LRST inhibitory brake. Impaired presynaptic inhibition allows unchecked Ia sensory drive. Persistent Inward Currents (PICs) activate, producing a sudden velocity-dependent catch at R₁.';
+        if (clonusBtn) clonusBtn.classList.remove('hidden');
+        document.getElementById('slider-pad').value = 20;
+        document.getElementById('label-pad-efficiency').textContent = '20% (Impaired)';
+        document.getElementById('slider-pic').value = 38;
+        document.getElementById('label-pic-gain').textContent = '3.8x (Exaggerated)';
+        updateTardieuDisplay(true);
+      } else {
+        // Compare Dual Mode
+        infoCard.className = 'p-3.5 rounded-xl border transition space-y-1.5 bg-cyan-500/10 border-cyan-500/30 text-cyan-200';
+        infoTitle.textContent = 'Side-by-Side Dual View';
+        infoTitle.className = 'text-xs font-bold uppercase tracking-wider text-cyan-300';
+        infoTag.textContent = 'Direct Comparison';
+        infoTag.className = 'px-2 py-0.5 rounded text-[10px] font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/40';
+        infoDesc.textContent = 'Simultaneous real-time comparison of Normal Control (top limb, intact presynaptic gating) vs. Spastic UMNS (bottom limb, catch at R₁). Execute stretch to observe the difference in real-time trajectory and biomechanics.';
+        if (clonusBtn) clonusBtn.classList.remove('hidden');
+        updateTardieuDisplay(true);
+      }
+
+      resetJoint();
+    }
+
+    function updatePhysioParam(param, val) {
+      if (param === 'pad') {
+        State.presynapticInhibition = parseInt(val);
+        const lbl = document.getElementById('label-pad-efficiency');
+        lbl.textContent = `${State.presynapticInhibition}% ${State.presynapticInhibition > 60 ? '(Intact)' : (State.presynapticInhibition > 35 ? '(Moderate Deficit)' : '(Severe Impairment)')}`;
+      } else if (param === 'pic') {
+        State.picGain = parseFloat(val) / 10;
+        const lbl = document.getElementById('label-pic-gain');
+        lbl.textContent = `${State.picGain.toFixed(1)}x ${State.picGain > 2.5 ? '(Exaggerated PIC)' : '(Normal Modulation)'}`;
+      }
+    }
+
+    function toggleClonus() {
+      State.isClonusActive = !State.isClonusActive;
+      const btn = document.getElementById('btn-trigger-clonus');
+      const tag = document.getElementById('clonus-indicator-tag');
+      if (State.isClonusActive) {
+        btn.classList.add('bg-purple-600', 'text-white', 'border-purple-400');
+        btn.classList.remove('bg-purple-500/10', 'text-purple-300');
+        tag.classList.remove('hidden');
+        catchTriggered = true;
+        armAnimAngle = State.catchAngle;
+      } else {
+        btn.classList.remove('bg-purple-600', 'text-white', 'border-purple-400');
+        btn.classList.add('bg-purple-500/10', 'text-purple-300');
+        tag.classList.add('hidden');
+      }
+    }
+
+    function updateTardieuDisplay(isSpastic) {
+      const badge = document.getElementById('tardieu-status-badge');
+      const r1El = document.getElementById('tardieu-r1');
+      const r2El = document.getElementById('tardieu-r2');
+      const diffEl = document.getElementById('tardieu-diff');
+      const deductionEl = document.getElementById('tardieu-deduction');
+
+      if (isSpastic) {
+        badge.className = 'px-2 py-0.5 rounded text-[10px] font-bold bg-red-500/20 text-red-300 border border-red-500/30';
+        badge.textContent = 'Catch Detected';
+        r1El.textContent = `${State.catchAngle}° Flexion`;
+        r2El.textContent = '0° (140° Total ROM)';
+        diffEl.textContent = `${State.catchAngle}°`;
+        diffEl.className = 'font-mono text-emerald-400 text-sm font-extrabold';
+        deductionEl.innerHTML = `<strong>Clinical Deduction:</strong> Since R₂ - R₁ = ${State.catchAngle}° > 20°, this resistance is driven by <em>Dynamic Neural Spasticity</em> rather than fixed contracture. The patient is an ideal candidate for focal Botulinum Toxin or pharmacological tone reduction.`;
+      } else {
+        badge.className = 'px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30';
+        badge.textContent = 'Normal Tone (Grade 0)';
+        r1El.textContent = '0° (No Catch)';
+        r2El.textContent = '0° (Full Extension)';
+        diffEl.textContent = '0°';
+        diffEl.className = 'font-mono text-slate-400 text-sm font-bold';
+        deductionEl.innerHTML = `<strong>Clinical Deduction:</strong> R₁ = R₂ (ΔR = 0°). Presynaptic GABAergic gating and reciprocal inhibition suppress reflex overactivity. Resistance is purely physiological viscoelasticity (< 12 N).`;
+      }
+    }
 
     function setStretchVelocity(vel) {
       State.stretchVelocity = vel;
@@ -1995,40 +2280,231 @@
         btn.classList.remove('border-slate-700', 'bg-slate-800');
         btn.classList.add('border-teal-500', 'bg-teal-500/20');
       }
+      const velDesc = document.getElementById('label-vel-desc');
+      if (velDesc) {
+        if (vel === 'V1') velDesc.textContent = 'V1 = Very slow (10°/s)';
+        else if (vel === 'V2') velDesc.textContent = 'V2 = Gravity fall (60°/s)';
+        else velDesc.textContent = 'V3 = Fast snap (180°/s)';
+      }
     }
 
     function updateLimbManualAngle(angleVal) {
       armTargetAngle = parseFloat(angleVal);
+      normalTargetAngle = armTargetAngle;
       State.elbowAngle = armTargetAngle;
-      document.getElementById('label-angle-display').textContent = `${Math.round(armTargetAngle)}°`;
+      document.getElementById('label-angle-display').textContent = `${Math.round(armTargetAngle)}° (${armTargetAngle > 80 ? 'Flexed' : (armTargetAngle < 20 ? 'Extended' : 'Mid-Range')})`;
     }
 
     function triggerAutoStretch() {
-      armAnimAngle = 25; // start from deep flexion
+      armAnimAngle = 120; // Start from flexed position
+      normalAnimAngle = 120;
       catchTriggered = false;
+      State.isClonusActive = false;
       document.getElementById('catch-indicator-tag').classList.add('hidden');
+      document.getElementById('clonus-indicator-tag').classList.add('hidden');
 
       if (State.stretchVelocity === 'V1') {
-        armStretchSpeed = 0.6; // slow, no catch
-        armTargetAngle = 145;
+        armStretchSpeed = 0.5; // Very slow stretch
+        armTargetAngle = 0;
+        normalTargetAngle = 0;
       } else if (State.stretchVelocity === 'V2') {
-        armStretchSpeed = 1.8;
-        armTargetAngle = 145;
+        armStretchSpeed = 1.6;
+        armTargetAngle = 0;
+        normalTargetAngle = 0;
       } else {
-        armStretchSpeed = 6.0; // fast V3: triggers catch at 68 deg
-        armTargetAngle = 145;
+        armStretchSpeed = 5.0; // Fast V3 stretch
+        armTargetAngle = 0;
+        normalTargetAngle = 0;
       }
       isStretching = true;
+      normalIsStretching = true;
     }
 
     function resetJoint() {
       isStretching = false;
-      armAnimAngle = 30;
-      armTargetAngle = 30;
+      normalIsStretching = false;
+      armAnimAngle = 120;
+      armTargetAngle = 120;
+      normalAnimAngle = 120;
+      normalTargetAngle = 120;
       catchTriggered = false;
-      document.getElementById('slider-elbow-angle').value = 30;
-      document.getElementById('label-angle-display').textContent = '30° (Flexed)';
+      State.isClonusActive = false;
+      document.getElementById('slider-elbow-angle').value = 120;
+      document.getElementById('label-angle-display').textContent = '120° (Flexed)';
       document.getElementById('catch-indicator-tag').classList.add('hidden');
+      document.getElementById('clonus-indicator-tag').classList.add('hidden');
+    }
+
+    // ==========================================
+    // ANATOMICALLY CORRECT LIMB RENDERER
+    // Shoulder (Left) -> Elbow (Center) -> Hand (Right/Up)
+    // Anterior Biceps (TOP) • Posterior Triceps (BOTTOM)
+    // ==========================================
+    function drawArmLimb(ctx, config) {
+      const {
+        shoulderX,
+        shoulderY,
+        humerusLen,
+        forearmLen,
+        angleDeg,
+        isSpastic,
+        isCatch,
+        isClonus,
+        label,
+        scale = 1
+      } = config;
+
+      const elbowX = shoulderX + humerusLen;
+      const elbowY = shoulderY;
+
+      // Goniometry:
+      // angleDeg = 0°: Full Extension (hand straight horizontal to the right)
+      // angleDeg = 90°: Forearm straight UP (vertical)
+      // angleDeg = 120°: Forearm flexed back toward shoulder
+      const rad = (angleDeg * Math.PI) / 180;
+      const handX = elbowX + Math.cos(rad) * forearmLen;
+      const handY = elbowY - Math.sin(rad) * forearmLen;
+
+      // 1. Draw Upper Arm (Humerus Bone Core)
+      ctx.strokeStyle = '#334155';
+      ctx.lineWidth = 14 * scale;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(shoulderX, shoulderY);
+      ctx.lineTo(elbowX, elbowY);
+      ctx.stroke();
+
+      // 2. Draw Posterior Triceps (BOTTOM / Extensor aspect)
+      // Sits underneath the humerus, inserting into olecranon
+      const tricepsOriginX = shoulderX + 22 * scale;
+      const tricepsOriginY = shoulderY + 10 * scale;
+      const olecranonX = elbowX - 8 * scale;
+      const olecranonY = elbowY + 8 * scale;
+      const tricepsMidX = (tricepsOriginX + olecranonX) / 2;
+      const tricepsBulge = 14 * scale - (angleDeg / 140) * 6 * scale;
+
+      ctx.strokeStyle = '#475569';
+      ctx.lineWidth = tricepsBulge;
+      ctx.beginPath();
+      ctx.moveTo(tricepsOriginX, tricepsOriginY);
+      ctx.quadraticCurveTo(tricepsMidX, shoulderY + 16 * scale, olecranonX, olecranonY);
+      ctx.stroke();
+
+      // 3. Draw Forearm Bones (Radius / Ulna)
+      ctx.strokeStyle = '#64748b';
+      ctx.lineWidth = 12 * scale;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(elbowX, elbowY);
+      ctx.lineTo(handX, handY);
+      ctx.stroke();
+
+      // 4. Draw Anterior Biceps Brachii (TOP / Flexor aspect)
+      // Originates near anterior shoulder, inserts into radial tuberosity
+      const bicepsOriginX = shoulderX + 16 * scale;
+      const bicepsOriginY = shoulderY - 8 * scale;
+      const insertDist = 32 * scale;
+      const insertX = elbowX + Math.cos(rad) * insertDist;
+      const insertY = elbowY - Math.sin(rad) * insertDist;
+
+      // Muscle belly dynamics:
+      // When flexed (high angle): concentric bulge, thick and elevated
+      // When extended (low angle): stretched, elongated, and thinner
+      const flexionRatio = angleDeg / 140;
+      const bicepsThickness = (12 + (flexionRatio * 14)) * scale;
+      const midBx = (bicepsOriginX + insertX) / 2;
+      const midBy = shoulderY - (16 + (flexionRatio * 18)) * scale;
+
+      // Spasm / Catch styling
+      let bicepsColor = '#14b8a6'; // Calm teal in normal
+      if (isSpastic) {
+        if (isCatch || isClonus) {
+          bicepsColor = '#ef4444'; // Bright contracting red
+          // Spasm radiating aura
+          ctx.strokeStyle = 'rgba(239, 68, 68, 0.35)';
+          ctx.lineWidth = bicepsThickness + 14 * scale;
+          ctx.beginPath();
+          ctx.moveTo(bicepsOriginX, bicepsOriginY);
+          ctx.quadraticCurveTo(midBx, midBy - 4 * scale, insertX, insertY);
+          ctx.stroke();
+        } else {
+          bicepsColor = '#0d9488';
+        }
+      }
+
+      // Distal and proximal tendon cords (Silvery white)
+      ctx.strokeStyle = '#cbd5e1';
+      ctx.lineWidth = 4 * scale;
+      ctx.beginPath();
+      ctx.moveTo(insertX, insertY);
+      ctx.lineTo(elbowX + Math.cos(rad) * 12 * scale, elbowY - Math.sin(rad) * 12 * scale);
+      ctx.stroke();
+
+      // Biceps Muscle Belly
+      ctx.strokeStyle = bicepsColor;
+      ctx.lineWidth = bicepsThickness;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(bicepsOriginX, bicepsOriginY);
+      ctx.quadraticCurveTo(midBx, midBy, insertX, insertY);
+      ctx.stroke();
+
+      // Muscle fibers striation highlights
+      ctx.strokeStyle = isCatch ? 'rgba(255, 255, 255, 0.6)' : 'rgba(255, 255, 255, 0.25)';
+      ctx.lineWidth = 1.5 * scale;
+      ctx.beginPath();
+      ctx.moveTo(midBx - 15 * scale, midBy + 2 * scale);
+      ctx.lineTo(midBx + 15 * scale, midBy + 2 * scale);
+      ctx.stroke();
+
+      // 5. Joints (Shoulder Ball & Elbow Pivot)
+      // Shoulder
+      ctx.fillStyle = '#0f172a';
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 3 * scale;
+      ctx.beginPath();
+      ctx.arc(shoulderX, shoulderY, 12 * scale, 0, Math.PI * 2);
+      ctx.fill(); ctx.stroke();
+
+      // Elbow Joint
+      ctx.fillStyle = '#0f172a';
+      ctx.strokeStyle = isCatch ? '#ef4444' : (isSpastic ? '#f59e0b' : '#10b981');
+      ctx.beginPath();
+      ctx.arc(elbowX, elbowY, 10 * scale, 0, Math.PI * 2);
+      ctx.fill(); ctx.stroke();
+
+      // Hand Graphic
+      ctx.fillStyle = '#94a3b8';
+      ctx.beginPath();
+      ctx.arc(handX, handY, 9 * scale, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Examiner's testing grip indicator
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 2 * scale;
+      ctx.setLineDash([3, 3]);
+      ctx.beginPath();
+      ctx.arc(handX, handY, 15 * scale, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Goniometric Arc & Protractor
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.4)';
+      ctx.lineWidth = 1.5 * scale;
+      ctx.beginPath();
+      ctx.arc(elbowX, elbowY, 35 * scale, 0, -rad, true);
+      ctx.stroke();
+
+      // Text Labels
+      ctx.fillStyle = '#ffffff';
+      ctx.font = `bold ${Math.round(11 * scale)}px sans-serif`;
+      ctx.fillText(`${label}: ${Math.round(angleDeg)}°`, elbowX - 30 * scale, elbowY + 32 * scale);
+
+      if (isCatch) {
+        ctx.fillStyle = '#ef4444';
+        ctx.font = `bold ${Math.round(12 * scale)}px sans-serif`;
+        ctx.fillText(`⚡ R₁ CATCH (${Math.round(angleDeg)}°)`, elbowX + 15 * scale, elbowY - 45 * scale);
+      }
     }
 
     function initArmCanvas() {
@@ -2039,101 +2515,188 @@
       function render() {
         if (State.currentTab !== 'stretch') return;
 
-        // Smooth physics interpolation
+        const isCompare = State.musclePhysioMode === 'compare';
+        const isSpasticMode = State.musclePhysioMode === 'spastic' || isCompare;
+
+        // Kinematics update:
+        // Spastic limb
         if (isStretching) {
-          if (State.stretchVelocity === 'V3' && armAnimAngle >= State.catchAngle && !catchTriggered) {
+          if (State.isClonusActive) {
+            clonusTimer += 0.35;
+            armAnimAngle = State.catchAngle + Math.sin(clonusTimer * 6) * 7;
+          } else if (State.stretchVelocity === 'V3' && isSpasticMode && armAnimAngle <= State.catchAngle && !catchTriggered) {
+            // Velocity-dependent Lance Catch triggered!
             catchTriggered = true;
             armAnimAngle = State.catchAngle;
             armTargetAngle = State.catchAngle;
             isStretching = false;
             document.getElementById('catch-indicator-tag').classList.remove('hidden');
           } else {
-            armAnimAngle += armStretchSpeed;
-            if (armAnimAngle >= armTargetAngle) {
+            armAnimAngle -= armStretchSpeed;
+            if (armAnimAngle <= armTargetAngle) {
               armAnimAngle = armTargetAngle;
               isStretching = false;
             }
           }
           document.getElementById('slider-elbow-angle').value = Math.round(armAnimAngle);
           document.getElementById('label-angle-display').textContent = `${Math.round(armAnimAngle)}°`;
-        } else {
-          // Manual drag smoothing
+        } else if (!State.isClonusActive) {
+          // Manual smoothing
           armAnimAngle += (armTargetAngle - armAnimAngle) * 0.2;
+        }
+
+        // Normal limb (in compare mode or normal mode)
+        if (normalIsStretching) {
+          normalAnimAngle -= armStretchSpeed;
+          if (normalAnimAngle <= normalTargetAngle) {
+            normalAnimAngle = normalTargetAngle;
+            normalIsStretching = false;
+          }
+        } else {
+          normalAnimAngle += (normalTargetAngle - normalAnimAngle) * 0.2;
         }
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // Center origin at shoulder
-        const shoulderX = 220;
-        const shoulderY = 80;
-        const upperArmLen = 140;
-        const elbowX = shoulderX + upperArmLen;
-        const elbowY = shoulderY + 40;
-        const forearmLen = 150;
-
-        // Calculate forearm endpoint based on angle
-        const rad = (armAnimAngle * Math.PI) / 180;
-        const handX = elbowX + Math.cos(rad) * forearmLen;
-        const handY = elbowY + Math.sin(rad) * forearmLen;
-
-        // Draw upper arm (Humerus)
-        ctx.strokeStyle = '#475569';
-        ctx.lineWidth = 22;
-        ctx.lineCap = 'round';
-        ctx.beginPath();
-        ctx.moveTo(shoulderX, shoulderY);
-        ctx.lineTo(elbowX, elbowY);
-        ctx.stroke();
-
-        // Draw forearm (Radius/Ulna)
-        ctx.strokeStyle = '#64748b';
-        ctx.lineWidth = 18;
-        ctx.beginPath();
-        ctx.moveTo(elbowX, elbowY);
-        ctx.lineTo(handX, handY);
-        ctx.stroke();
-
-        // Draw Biceps Muscle Belly (Stretches with angle)
-        const bicepsStretch = armAnimAngle / 150;
-        const bicepsThickness = 22 - (bicepsStretch * 8);
-        ctx.strokeStyle = catchTriggered ? '#ef4444' : '#14b8a6';
-        ctx.lineWidth = bicepsThickness;
-        ctx.beginPath();
-        ctx.moveTo(shoulderX + 20, shoulderY + 5);
-        // Quadratic curve across the elbow
-        const midX = (shoulderX + elbowX + handX) / 3;
-        const midY = (shoulderY + elbowY + handY) / 3 - (20 - bicepsStretch * 15);
-        ctx.quadraticCurveTo(midX, midY, elbowX + Math.cos(rad) * 40, elbowY + Math.sin(rad) * 40);
-        ctx.stroke();
-
-        // Joints (Shoulder & Elbow)
-        ctx.fillStyle = '#0f172a';
-        ctx.strokeStyle = '#38bdf8';
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        ctx.arc(shoulderX, shoulderY, 14, 0, Math.PI * 2);
-        ctx.fill(); ctx.stroke();
-
-        ctx.strokeStyle = catchTriggered ? '#ef4444' : '#10b981';
-        ctx.beginPath();
-        ctx.arc(elbowX, elbowY, 12, 0, Math.PI * 2);
-        ctx.fill(); ctx.stroke();
-
-        // Text Annotations
-        ctx.fillStyle = '#ffffff';
-        ctx.font = 'bold 12px sans-serif';
-        ctx.fillText(`Joint Angle: ${Math.round(armAnimAngle)}°`, elbowX - 40, elbowY + 70);
-
-        if (catchTriggered) {
-          ctx.fillStyle = '#ef4444';
-          ctx.font = 'bold 13px sans-serif';
-          ctx.fillText(`R1 Catch Angle Reached (${State.catchAngle}°)`, elbowX + 30, elbowY - 20);
+        // Background subtle grid
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 1;
+        for (let x = 0; x < canvas.width; x += 40) {
+          ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
         }
 
-        // Push data to oscilloscope
-        let spindleFiring = (armStretchSpeed > 0 ? armStretchSpeed * 15 : 5) + (armAnimAngle * 0.1);
-        let resistance = catchTriggered ? 90 : (armAnimAngle * 0.2 + (isStretching ? 15 : 5));
-        waveHistory.push({ spindle: spindleFiring, resistance: resistance });
+        if (isCompare) {
+          // ==============================
+          // DUAL SIDE-BY-SIDE MODE
+          // ==============================
+          // Upper track: Normal Control
+          ctx.fillStyle = '#10b981';
+          ctx.font = 'bold 11px sans-serif';
+          ctx.fillText('🟢 NORMAL MUSCLE CONTROL (Intact Presynaptic Inhibition - No Catch)', 25, 25);
+          drawArmLimb(ctx, {
+            shoulderX: 180,
+            shoulderY: 75,
+            humerusLen: 150,
+            forearmLen: 140,
+            angleDeg: normalAnimAngle,
+            isSpastic: false,
+            isCatch: false,
+            isClonus: false,
+            label: 'Normal Angle',
+            scale: 0.8
+          });
+
+          // Horizontal divider
+          ctx.strokeStyle = '#1e293b';
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.moveTo(20, 140);
+          ctx.lineTo(canvas.width - 20, 140);
+          ctx.stroke();
+
+          // Lower track: Spastic UMNS
+          ctx.fillStyle = '#ef4444';
+          ctx.font = 'bold 11px sans-serif';
+          ctx.fillText('🔴 SPASTIC UMNS (Loss of LRST Brake - Velocity-Dependent Catch at R₁)', 25, 160);
+          drawArmLimb(ctx, {
+            shoulderX: 180,
+            shoulderY: 215,
+            humerusLen: 150,
+            forearmLen: 140,
+            angleDeg: armAnimAngle,
+            isSpastic: true,
+            isCatch: catchTriggered,
+            isClonus: State.isClonusActive,
+            label: 'Spastic Angle',
+            scale: 0.8
+          });
+        } else {
+          // ==============================
+          // SINGLE IMMERSIVE LIMB
+          // ==============================
+          const isNormal = State.musclePhysioMode === 'normal';
+          const angleToDraw = isNormal ? normalAnimAngle : armAnimAngle;
+          const catchToDraw = isNormal ? false : catchTriggered;
+
+          // Anatomical orientation guides
+          ctx.fillStyle = '#64748b';
+          ctx.font = '10px sans-serif';
+          ctx.fillText('↑ ANTERIOR (VENTRAL) — Biceps Brachii Flexor', 180, 25);
+          ctx.fillText('↓ POSTERIOR (DORSAL) — Triceps Brachii Extensor', 180, canvas.height - 15);
+
+          drawArmLimb(ctx, {
+            shoulderX: 180,
+            shoulderY: 165,
+            humerusLen: 180,
+            forearmLen: 170,
+            angleDeg: angleToDraw,
+            isSpastic: !isNormal,
+            isCatch: catchToDraw,
+            isClonus: State.isClonusActive,
+            label: isNormal ? 'Normal Control' : 'Spastic Extremity',
+            scale: 1.05
+          });
+        }
+
+        // ==============================
+        // ELECTROPHYSIOLOGICAL TELEMETRY
+        // ==============================
+        const speed = armStretchSpeed;
+        const currentAngle = State.musclePhysioMode === 'normal' ? normalAnimAngle : armAnimAngle;
+        const stretchAmount = (140 - currentAngle) / 140; // 0 at flexed, 1 at extended
+
+        let iaDischarge = 0;
+        let picPotential = -65;
+        let emgBurst = 0;
+        let forceN = 0;
+
+        if (State.musclePhysioMode === 'normal') {
+          // Normal: Presynaptic gating filters sensory input
+          iaDischarge = 8 + (isStretching ? speed * 8 : 0) + (stretchAmount * 12);
+          picPotential = -65 + (isStretching ? 3 : 0);
+          emgBurst = isStretching ? Math.round(Math.random() * 8) : 0;
+          forceN = 5 + (stretchAmount * 7); // Compliant viscoelastic curve (max ~12 N)
+        } else {
+          // Spastic: Deficient PAD + Amplified PICs
+          if (State.isClonusActive) {
+            iaDischarge = 90 + Math.sin(clonusTimer * 6) * 60;
+            picPotential = -35 + Math.sin(clonusTimer * 6) * 15;
+            emgBurst = Math.max(0, Math.round(280 + Math.sin(clonusTimer * 6) * 180));
+            forceN = 75 + Math.sin(clonusTimer * 6) * 25;
+          } else if (catchTriggered) {
+            iaDischarge = 145 + Math.round(Math.random() * 15);
+            picPotential = -25; // Plateau potential
+            emgBurst = 380 + Math.round(Math.random() * 70); // Explosive synchronized burst
+            forceN = 105; // High resistive catch
+          } else if (isStretching) {
+            iaDischarge = 15 + (speed * 26) + (stretchAmount * 25);
+            picPotential = -65 + (speed * 4);
+            emgBurst = speed > 3 ? Math.round(Math.random() * 35) : 5;
+            forceN = 12 + (stretchAmount * 22);
+          } else {
+            iaDischarge = 12;
+            picPotential = -65;
+            emgBurst = 0;
+            forceN = 6;
+          }
+        }
+
+        // Update DOM Telemetry values
+        const telIa = document.getElementById('telemetry-ia');
+        const telPic = document.getElementById('telemetry-pic');
+        const telEmg = document.getElementById('telemetry-emg');
+        const telForce = document.getElementById('telemetry-force');
+        if (telIa) telIa.textContent = `${Math.round(iaDischarge)} Hz`;
+        if (telPic) telPic.textContent = `${Math.round(picPotential)} mV`;
+        if (telEmg) telEmg.textContent = `${Math.round(emgBurst)} µV`;
+        if (telForce) telForce.textContent = `${Math.round(forceN)} N`;
+
+        waveHistory.push({
+          spindle: iaDischarge,
+          pic: picPotential + 70, // offset for visual scale
+          emg: emgBurst / 4,
+          force: forceN
+        });
         if (waveHistory.length > 100) waveHistory.shift();
 
         requestAnimationFrame(render);
@@ -2157,25 +2720,50 @@
           ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
         }
 
-        // Draw Spindle Wave (Teal)
-        ctx.strokeStyle = '#14b8a6';
-        ctx.lineWidth = 2;
+        // 1. Spindle Ia Wave (Cyan)
+        ctx.strokeStyle = '#06b6d4';
+        ctx.lineWidth = 1.5;
         ctx.beginPath();
         waveHistory.forEach((pt, i) => {
           const x = (i / 100) * canvas.width;
-          const y = canvas.height - 30 - (pt.spindle * 1.5);
+          const y = canvas.height - 25 - (pt.spindle * 0.7);
           if (i === 0) ctx.moveTo(x, y);
           else ctx.lineTo(x, y);
         });
         ctx.stroke();
 
-        // Draw Resistance Force Wave (Red)
-        ctx.strokeStyle = '#ef4444';
+        // 2. Motoneuron PIC Wave (Amber)
+        ctx.strokeStyle = '#f59e0b';
+        ctx.lineWidth = 1.8;
+        ctx.beginPath();
+        waveHistory.forEach((pt, i) => {
+          const x = (i / 100) * canvas.width;
+          const y = canvas.height - 15 - (pt.pic * 1.6);
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+
+        // 3. Surface EMG Wave (Emerald if normal, Red if spastic)
+        const isNormal = State.musclePhysioMode === 'normal';
+        ctx.strokeStyle = isNormal ? '#10b981' : '#ef4444';
+        ctx.lineWidth = 2.0;
+        ctx.beginPath();
+        waveHistory.forEach((pt, i) => {
+          const x = (i / 100) * canvas.width;
+          const y = canvas.height - 35 - pt.emg;
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+
+        // 4. Resistance Force Wave (Red/Coral)
+        ctx.strokeStyle = '#f87171';
         ctx.lineWidth = 2.5;
         ctx.beginPath();
         waveHistory.forEach((pt, i) => {
           const x = (i / 100) * canvas.width;
-          const y = canvas.height - 20 - (pt.resistance * 1.3);
+          const y = canvas.height - 20 - (pt.force * 1.1);
           if (i === 0) ctx.moveTo(x, y);
           else ctx.lineTo(x, y);
         });
@@ -2538,42 +3126,50 @@
         if (State.currentTab !== 'osce') return;
         if (osceIsTesting) {
           osceArmAngle += osceArmSpeed;
-          if (osceArmAngle >= 140) {
-            osceArmAngle = 140;
+          if (osceArmAngle >= 135) {
+            osceArmAngle = 135;
             osceIsTesting = false;
           }
         }
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        const sx = 220, sy = 90;
-        const ex = sx + 140, ey = sy + 30;
-        const rad = (osceArmAngle * Math.PI) / 180;
-        const hx = ex + Math.cos(rad) * 140;
-        const hy = ey + Math.sin(rad) * 140;
+        // Subtle exam room background
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 1;
+        for (let x = 0; x < canvas.width; x += 40) {
+          ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+        }
 
-        // Limb
-        ctx.strokeStyle = '#475569';
-        ctx.lineWidth = 20;
-        ctx.lineCap = 'round';
-        ctx.beginPath();
-        ctx.moveTo(sx, sy); ctx.lineTo(ex, ey); ctx.stroke();
+        // Draw limb using standard anatomical orientation
+        // Test moves from flexion (120°) towards extension (0°)
+        const flexionAngle = Math.max(0, 130 - osceArmAngle);
+        const catchPoint = 65;
+        const hasCaught = osceArmSpeed > 3 && flexionAngle <= catchPoint;
 
-        ctx.strokeStyle = '#64748b';
-        ctx.lineWidth = 16;
-        ctx.beginPath();
-        ctx.moveTo(ex, ey); ctx.lineTo(hx, hy); ctx.stroke();
+        drawArmLimb(ctx, {
+          shoulderX: 180,
+          shoulderY: 155,
+          humerusLen: 180,
+          forearmLen: 160,
+          angleDeg: flexionAngle,
+          isSpastic: true,
+          isCatch: hasCaught,
+          isClonus: false,
+          label: 'Tested ROM',
+          scale: 1.0
+        });
 
-        // Physician Hand Graphic
-        ctx.strokeStyle = '#38bdf8';
-        ctx.lineWidth = 4;
-        ctx.beginPath();
-        ctx.arc(hx, hy, 16, 0, Math.PI * 2);
-        ctx.stroke();
+        // Examination guidelines text
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '11px sans-serif';
+        ctx.fillText(`Tested Flexion Angle: ${Math.round(flexionAngle)}° | Extension Deficit: ${Math.round(flexionAngle)}°`, 180, 30);
 
-        ctx.fillStyle = '#ffffff';
-        ctx.font = 'bold 12px sans-serif';
-        ctx.fillText(`Tested Joint Angle: ${Math.round(osceArmAngle)}°`, ex - 40, ey + 80);
+        if (hasCaught) {
+          ctx.fillStyle = '#ef4444';
+          ctx.font = 'bold 12px sans-serif';
+          ctx.fillText(`⚠️ Dynamic Catch Triggered! Rate-Dependent Resistance (MAS 1+ / Tardieu X 2)`, 180, 50);
+        }
 
         requestAnimationFrame(draw);
       }
