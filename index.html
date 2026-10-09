@@ -467,26 +467,60 @@
             </div>
           </div>
 
-          <!-- Proprioceptor Canvas -->
-          <div class="lg:col-span-2 bg-[#060c1d] rounded-xl border border-slate-800 overflow-hidden p-3 relative flex flex-col justify-between">
-            <div class="flex justify-between items-center text-xs px-2 pt-1 mb-1">
-              <div class="flex items-center gap-2">
-                <span class="font-bold text-white">Live Proprioceptor Mechanical State</span>
-                <span id="badge-spindle-state" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-teal-500/20 text-teal-300 border border-teal-500/30">Spindle Taut & Active</span>
+          <!-- Proprioceptor Canvas & Telemetry System -->
+          <div class="lg:col-span-2 bg-[#060c1d] rounded-xl border border-slate-800 overflow-hidden p-4 relative flex flex-col justify-between space-y-3">
+            <!-- Distinct Dual Telemetry Cards (No text overlapping!) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+              <!-- Muscle Spindle Card -->
+              <div class="p-2.5 rounded-lg bg-slate-900/90 border border-teal-500/30 flex items-center justify-between shadow-sm">
+                <div>
+                  <div class="flex items-center gap-1.5">
+                    <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 inline-block shadow-sm shadow-cyan-400/50"></span>
+                    <span class="font-bold text-white text-[12px]">Muscle Spindle (In Parallel)</span>
+                  </div>
+                  <span id="badge-spindle-state" class="inline-block mt-1 px-2 py-0.5 rounded text-[10px] font-bold bg-teal-500/20 text-teal-300 border border-teal-500/30">
+                    Spindle Taut (α-γ Coactivation)
+                  </span>
+                </div>
+                <div class="text-right">
+                  <span class="text-[10px] text-slate-400 block font-medium">Type Ia Sensory</span>
+                  <span id="val-ia-firing" class="font-mono text-cyan-400 font-extrabold text-sm">30 Hz</span>
+                </div>
               </div>
-              <div class="flex items-center gap-3 text-[11px]">
-                <span class="text-teal-400 font-mono">Ia Firing: <strong id="val-ia-firing">30 Hz</strong></span>
-                <span class="text-amber-400 font-mono">Ib Tension: <strong id="val-ib-tension">Low</strong></span>
+
+              <!-- Golgi Tendon Organ Card -->
+              <div class="p-2.5 rounded-lg bg-slate-900/90 border border-amber-500/30 flex items-center justify-between shadow-sm">
+                <div>
+                  <div class="flex items-center gap-1.5">
+                    <span class="w-2.5 h-2.5 rounded-full bg-amber-400 inline-block shadow-sm shadow-amber-400/50"></span>
+                    <span class="font-bold text-white text-[12px]">Golgi Tendon Organ (In Series)</span>
+                  </div>
+                  <span id="badge-gto-state" class="inline-block mt-1 px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                    Baseline Tendon Load
+                  </span>
+                </div>
+                <div class="text-right">
+                  <span class="text-[10px] text-slate-400 block font-medium">Type Ib Tension</span>
+                  <span id="val-ib-tension" class="font-mono text-amber-400 font-extrabold text-sm">8 Hz</span>
+                </div>
               </div>
             </div>
 
-            <div class="w-full h-[250px] relative">
-              <canvas id="proprioCanvas" width="700" height="250" class="w-full h-full block"></canvas>
+            <!-- Canvas Container (Height: 280px) -->
+            <div class="w-full h-[280px] bg-[#030712] rounded-lg border border-slate-800/80 relative overflow-hidden">
+              <canvas id="proprioCanvas" width="700" height="280" class="w-full h-full block"></canvas>
             </div>
 
-            <div class="text-[11px] text-slate-400 px-2 pb-1 pt-2 border-t border-slate-800 flex justify-between">
-              <span><strong>Muscle Spindle:</strong> Parallel arrangement • Senses Length & Velocity</span>
-              <span><strong>Golgi Tendon Organ (GTO):</strong> Series arrangement • Senses Tension (Force)</span>
+            <!-- Bottom Clinical Pillars -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] pt-1 border-t border-slate-800 text-slate-300">
+              <div class="p-2 rounded bg-slate-900/60 border border-slate-800/60">
+                <strong class="text-cyan-300">🔷 In Parallel (Muscle Spindle):</strong>
+                <p class="text-slate-400 mt-0.5">Senses muscle <em>length & stretch velocity</em>. When muscle shortens, gamma motor drive must co-contract polar ends to prevent sensory silence.</p>
+              </div>
+              <div class="p-2 rounded bg-slate-900/60 border border-slate-800/60">
+                <strong class="text-amber-300">🔶 In Series (Golgi Tendon Organ):</strong>
+                <p class="text-slate-400 mt-0.5">Senses muscle <em>tension & force</em>. Excessive contraction pulls tendon, triggering <strong>Autogenic Inhibition</strong> to prevent avulsion.</p>
+              </div>
             </div>
           </div>
         </div>
@@ -1523,102 +1557,221 @@
         proprioAnimTime += 0.04;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        const shortFrac = State.proprioShortening / 100;
-        const totalW = canvas.width - 160;
-        const currentMuscleW = totalW * (1 - shortFrac * 0.45);
-        const startX = 80;
-        const endX = startX + currentMuscleW;
-        const centerY = 120;
+        const shortFrac = State.proprioShortening / 100; // 0 to 0.8
+        const centerY = 135;
 
-        // Tendon at origin (left)
+        // Kinematics:
+        // Muscle contracts concentrically: width shortens, thickness bulges!
+        const boneOriginX = 45;
+        const proximalTendonW = 45;
+        const muscleStartX = boneOriginX + proximalTendonW; // 90
+        
+        const baseMuscleW = 380;
+        const currentMuscleW = baseMuscleW * (1 - shortFrac * 0.38);
+        const muscleEndX = muscleStartX + currentMuscleW;
+        
+        // Muscle thickness bulges when contracted
+        const muscleHalfH = 34 + (shortFrac * 16);
+
+        // 1. Left Bone Origin & Proximal Tendon
+        // Bone knob
+        ctx.fillStyle = '#cbd5e1';
+        ctx.beginPath();
+        ctx.arc(boneOriginX, centerY, 14, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#475569';
+        ctx.font = 'bold 9px sans-serif';
+        ctx.fillText('BONE', boneOriginX - 12, centerY + 3);
+
+        // Proximal Tendon (Dense white-silvery cord)
         ctx.strokeStyle = '#94a3b8';
-        ctx.lineWidth = 10;
+        ctx.lineWidth = 14;
         ctx.lineCap = 'round';
         ctx.beginPath();
-        ctx.moveTo(30, centerY);
-        ctx.lineTo(startX, centerY);
+        ctx.moveTo(boneOriginX, centerY);
+        ctx.lineTo(muscleStartX, centerY);
         ctx.stroke();
 
-        // Extrafusal Muscle Belly (Parallel)
-        ctx.fillStyle = '#b91c1c';
-        ctx.strokeStyle = '#ef4444';
-        ctx.lineWidth = 3;
+        // 2. Extrafusal Muscle Belly (The Force Generator)
+        // Anatomical gradient: rich muscle crimson
+        const muscleGrad = ctx.createLinearGradient(muscleStartX, centerY - muscleHalfH, muscleStartX, centerY + muscleHalfH);
+        muscleGrad.addColorStop(0, '#991b1b');
+        muscleGrad.addColorStop(0.5, '#dc2626');
+        muscleGrad.addColorStop(1, '#7f1d1d');
+
+        ctx.fillStyle = muscleGrad;
+        ctx.strokeStyle = '#f87171';
+        ctx.lineWidth = 2.5;
         ctx.beginPath();
         // Upper contour
-        ctx.moveTo(startX, centerY - 10);
-        ctx.quadraticCurveTo(startX + currentMuscleW * 0.5, centerY - 65, endX, centerY - 10);
+        ctx.moveTo(muscleStartX, centerY - 8);
+        ctx.quadraticCurveTo(muscleStartX + currentMuscleW * 0.5, centerY - muscleHalfH, muscleEndX, centerY - 8);
         // Lower contour
-        ctx.lineTo(endX, centerY + 10);
-        ctx.quadraticCurveTo(startX + currentMuscleW * 0.5, centerY + 65, startX, centerY + 10);
+        ctx.lineTo(muscleEndX, centerY + 8);
+        ctx.quadraticCurveTo(muscleStartX + currentMuscleW * 0.5, centerY + muscleHalfH, muscleStartX, centerY + 8);
         ctx.closePath();
         ctx.fill();
         ctx.stroke();
 
-        // Extrafusal striations
-        ctx.strokeStyle = 'rgba(255,255,255,0.2)';
-        ctx.lineWidth = 2;
-        const striations = 12;
-        for (let s = 1; s < striations; s++) {
-          const sx = startX + (s / striations) * currentMuscleW;
+        // Extrafusal Longitudinal Muscle Striations
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+        ctx.lineWidth = 1.5;
+        const numStriations = 8;
+        for (let s = 1; s < numStriations; s++) {
+          const sx = muscleStartX + (s / numStriations) * currentMuscleW;
           ctx.beginPath();
-          ctx.moveTo(sx, centerY - 35);
-          ctx.lineTo(sx, centerY + 35);
+          ctx.moveTo(sx, centerY - muscleHalfH * 0.65);
+          ctx.lineTo(sx, centerY + muscleHalfH * 0.65);
           ctx.stroke();
         }
 
-        // Intrafusal Muscle Spindle (Enclosed Capsule - In Parallel)
-        const spindleStartX = startX + currentMuscleW * 0.25;
-        const spindleEndX = startX + currentMuscleW * 0.75;
-        const spindleW = spindleEndX - spindleStartX;
+        // Extrafusal Label (Top left, clear)
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 11px sans-serif';
+        ctx.fillText('Extrafusal Muscle Fibers (α-MN Drive)', muscleStartX + 10, centerY - muscleHalfH - 8);
 
+        // 3. Intrafusal Muscle Spindle (Cutaway Window — IN PARALLEL)
+        const spindleStartX = muscleStartX + currentMuscleW * 0.22;
+        const spindleW = currentMuscleW * 0.56;
+        const spindleEndX = spindleStartX + spindleW;
         const isSlack = !State.alphaGammaActive && (shortFrac > 0.15);
 
-        ctx.fillStyle = isSlack ? '#475569' : '#0f766e';
-        ctx.strokeStyle = isSlack ? '#64748b' : '#14b8a6';
-        ctx.lineWidth = 2.5;
+        // Cutaway Window Background
+        ctx.fillStyle = '#061325';
+        ctx.strokeStyle = isSlack ? '#64748b' : '#0d9488';
+        ctx.lineWidth = 2;
         ctx.beginPath();
-        ctx.roundRect(spindleStartX, centerY - 14, spindleW, 28, 14);
+        ctx.roundRect(spindleStartX - 6, centerY - 18, spindleW + 12, 36, 18);
         ctx.fill();
         ctx.stroke();
 
-        // Nuclear Bag & Chain Sensory Equator
-        const equatorX = spindleStartX + spindleW * 0.5;
-        ctx.fillStyle = isSlack ? '#94a3b8' : '#2dd4bf';
-        ctx.beginPath();
-        ctx.arc(equatorX, centerY, isSlack ? 5 : 8, 0, Math.PI * 2);
-        ctx.fill();
+        // Polar Contractile Ends (Striated intrafusal poles)
+        const polarW = spindleW * 0.28;
+        // Left polar end
+        ctx.fillStyle = isSlack ? '#475569' : '#0f766e';
+        ctx.fillRect(spindleStartX, centerY - 10, polarW, 20);
+        // Right polar end
+        ctx.fillRect(spindleEndX - polarW, centerY - 10, polarW, 20);
 
-        // Spindle Ia sensory spiral annulospiral ending
-        ctx.strokeStyle = isSlack ? '#64748b' : '#38bdf8';
-        ctx.lineWidth = 2;
-        for (let r = -2; r <= 2; r++) {
+        if (State.alphaGammaActive && !isSlack) {
+          // Yellow γ-motor drive active arrows pulling polar ends
+          ctx.fillStyle = '#facc15';
+          ctx.font = 'bold 9px sans-serif';
+          ctx.fillText('γ-drive ◀', spindleStartX + 4, centerY + 3);
+          ctx.fillText('▶ γ-drive', spindleEndX - polarW + 2, centerY + 3);
+        }
+
+        // Central Equatorial Sensory Zone
+        const equatorStartX = spindleStartX + polarW;
+        const equatorW = spindleW - (polarW * 2);
+        const equatorMidX = equatorStartX + equatorW * 0.5;
+
+        // Draw Type Ia Annulospiral Sensory Coil
+        if (isSlack) {
+          // SLACK: Floppy, crumpled, wavy sagging gray line
+          ctx.strokeStyle = '#94a3b8';
+          ctx.lineWidth = 2.5;
           ctx.beginPath();
-          ctx.ellipse(equatorX + r * 6, centerY, 3, isSlack ? 5 : 10, 0, 0, Math.PI * 2);
+          ctx.moveTo(equatorStartX, centerY - 4);
+          for (let w = 0; w < 6; w++) {
+            const wx = equatorStartX + (w / 6) * equatorW;
+            const wy = centerY + (w % 2 === 0 ? 9 : -2);
+            ctx.lineTo(wx, wy);
+          }
+          ctx.lineTo(equatorStartX + equatorW, centerY);
+          ctx.stroke();
+
+          // SENSORY SILENCE WARNING BADGE
+          ctx.fillStyle = 'rgba(239, 68, 68, 0.9)';
+          ctx.beginPath();
+          ctx.roundRect(equatorMidX - 70, centerY + 24, 140, 20, 4);
+          ctx.fill();
+          ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 10px sans-serif';
+          ctx.fillText('⚠️ SENSORY SILENCE (0 Hz)', equatorMidX - 64, centerY + 38);
+        } else {
+          // TAUT: Elastic, crisp cyan helical spring coils
+          ctx.strokeStyle = '#38bdf8';
+          ctx.lineWidth = 2.5;
+          const coils = 5;
+          for (let c = 0; c < coils; c++) {
+            const cx = equatorStartX + 4 + (c * (equatorW - 8) / (coils - 1));
+            ctx.beginPath();
+            ctx.ellipse(cx, centerY, 3.5, 11, 0, 0, Math.PI * 2);
+            ctx.stroke();
+          }
+        }
+
+        // Label under spindle
+        ctx.fillStyle = isSlack ? '#94a3b8' : '#2dd4bf';
+        ctx.font = 'bold 10px sans-serif';
+        ctx.fillText('Intrafusal Spindle (In Parallel)', spindleStartX + 10, centerY + 16);
+
+        // 4. Musculotendinous Junction & Golgi Tendon Organ (IN SERIES)
+        const gtoStartX = muscleEndX + 16;
+        const gtoW = 46;
+        const rightBoneX = canvas.width - 35;
+
+        // Distal Tendon (Tendon connects muscle end -> GTO -> Bone)
+        const isHighTension = State.gtoHighTension;
+        const tendonColor = isHighTension ? '#ef4444' : '#cbd5e1';
+
+        // Connect muscle to GTO
+        ctx.strokeStyle = tendonColor;
+        ctx.lineWidth = isHighTension ? 16 : 12;
+        ctx.beginPath();
+        ctx.moveTo(muscleEndX, centerY);
+        ctx.lineTo(gtoStartX, centerY);
+        ctx.stroke();
+
+        // Connect GTO to Right Bone
+        ctx.beginPath();
+        ctx.moveTo(gtoStartX + gtoW, centerY);
+        ctx.lineTo(rightBoneX, centerY);
+        ctx.stroke();
+
+        // Right Bone Knob (Insertion)
+        ctx.fillStyle = '#cbd5e1';
+        ctx.beginPath();
+        ctx.arc(rightBoneX, centerY, 14, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#475569';
+        ctx.font = 'bold 9px sans-serif';
+        ctx.fillText('BONE', rightBoneX - 12, centerY + 3);
+
+        // GTO Capsule (In Series at tendon)
+        ctx.fillStyle = isHighTension ? 'rgba(239, 68, 68, 0.25)' : 'rgba(217, 119, 6, 0.25)';
+        ctx.strokeStyle = isHighTension ? '#ef4444' : '#f59e0b';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.roundRect(gtoStartX, centerY - 14, gtoW, 28, 8);
+        ctx.fill();
+        ctx.stroke();
+
+        // Braided Collagen Strands inside GTO
+        ctx.strokeStyle = isHighTension ? '#fca5a5' : '#fed7aa';
+        ctx.lineWidth = 1.5;
+        for (let b = -1; b <= 1; b++) {
+          ctx.beginPath();
+          ctx.moveTo(gtoStartX + 4, centerY + b * 6);
+          ctx.lineTo(gtoStartX + gtoW - 4, centerY - b * 6);
           ctx.stroke();
         }
 
-        // Golgi Tendon Organ (GTO - In Series at Tendon Junction)
-        const gtoX = endX + 15;
-        ctx.fillStyle = State.gtoHighTension ? '#ef4444' : '#d97706';
-        ctx.strokeStyle = State.gtoHighTension ? '#fca5a5' : '#f59e0b';
-        ctx.lineWidth = 2.5;
-        ctx.beginPath();
-        ctx.roundRect(gtoX, centerY - 12, 35, 24, 6);
-        ctx.fill();
-        ctx.stroke();
+        // GTO Label
+        ctx.fillStyle = isHighTension ? '#ef4444' : '#f59e0b';
+        ctx.font = 'bold 10px sans-serif';
+        ctx.fillText('GTO (Series)', gtoStartX - 4, centerY - 20);
 
-        // Tendon insertion (right)
-        ctx.strokeStyle = '#94a3b8';
-        ctx.lineWidth = 10;
-        ctx.beginPath();
-        ctx.moveTo(endX, centerY);
-        ctx.lineTo(gtoX, centerY);
-        ctx.moveTo(gtoX + 35, centerY);
-        ctx.lineTo(canvas.width - 30, centerY);
-        ctx.stroke();
+        if (isHighTension) {
+          // Tension Alert Callout
+          ctx.fillStyle = '#ef4444';
+          ctx.font = 'bold 10px sans-serif';
+          ctx.fillText('⚡ TENSION PEAK!', gtoStartX - 15, centerY + 32);
+        }
 
-        // Afferent Signal Firing Animation (Traveling sensory dots)
-        // Ia Afferent traveling UP
+        // 5. Afferent Nerve Signals & Traveling Action Potentials
+        // Ia Afferent: Travels UPWARDS from Spindle Equator to Dorsal Horn
         let iaFiringHz = 30;
         if (isSlack) {
           iaFiringHz = 0;
@@ -1626,69 +1779,81 @@
           iaFiringHz = 30 + Math.round(shortFrac * 25);
         }
 
-        document.getElementById('val-ia-firing').textContent = `${iaFiringHz} Hz`;
-        const badgeState = document.getElementById('badge-spindle-state');
-        if (isSlack) {
-          badgeState.textContent = "Spindle Slack (Sensory Silence)";
-          badgeState.className = "px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-700 text-slate-300 border border-slate-600";
-        } else {
-          badgeState.textContent = "Spindle Taut & Active (α-γ Coactivation)";
-          badgeState.className = "px-2 py-0.5 rounded-full text-[10px] font-bold bg-teal-500/20 text-teal-300 border border-teal-500/30";
+        // Update DOM Telemetry values
+        const iaValEl = document.getElementById('val-ia-firing');
+        const iaBadgeEl = document.getElementById('badge-spindle-state');
+        if (iaValEl) iaValEl.textContent = `${iaFiringHz} Hz`;
+        if (iaBadgeEl) {
+          if (isSlack) {
+            iaBadgeEl.textContent = '⚠️ Spindle Slack (Sensory Silence)';
+            iaBadgeEl.className = 'inline-block mt-1 px-2 py-0.5 rounded text-[10px] font-bold bg-slate-700 text-slate-300 border border-slate-600';
+          } else {
+            iaBadgeEl.textContent = 'Spindle Taut (α-γ Coactivation)';
+            iaBadgeEl.className = 'inline-block mt-1 px-2 py-0.5 rounded text-[10px] font-bold bg-teal-500/20 text-teal-300 border border-teal-500/30';
+          }
         }
 
-        // Draw traveling impulses from Spindle Ia upwards
         if (iaFiringHz > 0) {
-          ctx.strokeStyle = '#38bdf8';
-          ctx.lineWidth = 2;
+          // Draw Ia Afferent Axon (Upwards to spinal cord)
+          ctx.strokeStyle = '#06b6d4';
+          ctx.lineWidth = 2.5;
           ctx.beginPath();
-          ctx.moveTo(equatorX, centerY - 14);
-          ctx.lineTo(equatorX, 30);
+          ctx.moveTo(equatorMidX, centerY - 18);
+          ctx.lineTo(equatorMidX, 32);
           ctx.stroke();
 
-          for (let p = 0; p < 3; p++) {
-            const pt = ((proprioAnimTime * 2.5) + (p / 3)) % 1;
-            const py = (centerY - 14) - pt * ((centerY - 14) - 30);
+          // Action potentials traveling UP
+          const numDots = 3;
+          for (let p = 0; p < numDots; p++) {
+            const pt = ((proprioAnimTime * 2.8) + (p / numDots)) % 1;
+            const py = (centerY - 18) - pt * ((centerY - 18) - 32);
             ctx.fillStyle = '#ffffff';
             ctx.beginPath();
-            ctx.arc(equatorX, py, 3, 0, Math.PI * 2);
+            ctx.arc(equatorMidX, py, 3.5, 0, Math.PI * 2);
             ctx.fill();
           }
+
           ctx.fillStyle = '#38bdf8';
           ctx.font = 'bold 11px sans-serif';
-          ctx.fillText('Type Ia Afferent → Spinal Cord', equatorX + 8, 45);
+          ctx.fillText('Type Ia Afferent → Dorsal Horn', equatorMidX + 10, 42);
         }
 
-        // Draw traveling impulses from GTO Ib
-        const ibHz = State.gtoHighTension ? 85 : 8;
-        document.getElementById('val-ib-tension').textContent = State.gtoHighTension ? "CRITICAL HIGH (Ceiling)" : "Normal / Baseline";
-        ctx.strokeStyle = State.gtoHighTension ? '#ef4444' : '#f59e0b';
-        ctx.lineWidth = 2;
+        // Ib Afferent: Travels DOWNWARDS from GTO to Spinal Interneuron
+        const ibHz = isHighTension ? 85 : 8;
+        const ibValEl = document.getElementById('val-ib-tension');
+        const ibBadgeEl = document.getElementById('badge-gto-state');
+        if (ibValEl) ibValEl.textContent = `${ibHz} Hz`;
+        if (ibBadgeEl) {
+          if (isHighTension) {
+            ibBadgeEl.textContent = '🚨 CRITICAL FORCE (Ib Ceiling)';
+            ibBadgeEl.className = 'inline-block mt-1 px-2 py-0.5 rounded text-[10px] font-bold bg-red-500/20 text-red-300 border border-red-500/30 animate-pulse';
+          } else {
+            ibBadgeEl.textContent = 'Baseline Tendon Load';
+            ibBadgeEl.className = 'inline-block mt-1 px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30';
+          }
+        }
+
+        const gtoMidX = gtoStartX + gtoW * 0.5;
+        ctx.strokeStyle = isHighTension ? '#ef4444' : '#f59e0b';
+        ctx.lineWidth = 2.5;
         ctx.beginPath();
-        ctx.moveTo(gtoX + 17, centerY + 12);
-        ctx.lineTo(gtoX + 17, canvas.height - 25);
+        ctx.moveTo(gtoMidX, centerY + 14);
+        ctx.lineTo(gtoMidX, canvas.height - 24);
         ctx.stroke();
 
-        const ibImpulseCount = State.gtoHighTension ? 5 : 1;
-        for (let p = 0; p < ibImpulseCount; p++) {
-          const pt = ((proprioAnimTime * (State.gtoHighTension ? 4.5 : 1.2)) + (p / ibImpulseCount)) % 1;
-          const py = (centerY + 12) + pt * ((canvas.height - 25) - (centerY + 12));
+        const numIbDots = isHighTension ? 5 : 1;
+        for (let p = 0; p < numIbDots; p++) {
+          const pt = ((proprioAnimTime * (isHighTension ? 4.5 : 1.2)) + (p / numIbDots)) % 1;
+          const py = (centerY + 14) + pt * ((canvas.height - 24) - (centerY + 14));
           ctx.fillStyle = '#ffffff';
           ctx.beginPath();
-          ctx.arc(gtoX + 17, py, 3, 0, Math.PI * 2);
+          ctx.arc(gtoMidX, py, 3.5, 0, Math.PI * 2);
           ctx.fill();
         }
-        ctx.fillStyle = State.gtoHighTension ? '#ef4444' : '#f59e0b';
-        ctx.font = 'bold 11px sans-serif';
-        ctx.fillText('Type Ib Afferent (GTO Tension)', gtoX - 70, canvas.height - 35);
 
-        // Labels on canvas
-        ctx.fillStyle = '#ffffff';
+        ctx.fillStyle = isHighTension ? '#ef4444' : '#f59e0b';
         ctx.font = 'bold 11px sans-serif';
-        ctx.fillText('Extrafusal Muscle Fibers (α-MN)', startX + 10, centerY - 45);
-        ctx.fillStyle = isSlack ? '#94a3b8' : '#2dd4bf';
-        ctx.fillText('Muscle Spindle (Parallel)', spindleStartX + 5, centerY + 28);
-        ctx.fillStyle = '#f59e0b';
-        ctx.fillText('GTO (Series)', gtoX - 5, centerY - 20);
+        ctx.fillText('Type Ib Afferent → Ib Interneuron', gtoMidX - 180, canvas.height - 30);
 
         requestAnimationFrame(renderProprio);
       }
