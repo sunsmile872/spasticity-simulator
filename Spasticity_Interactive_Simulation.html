@@ -606,7 +606,7 @@
         </div>
 
         <!-- Circuit Selection Buttons -->
-        <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
           <button onclick="selectSegmentalCircuit('stretch')" id="btn-circuit-stretch" class="circuit-btn p-3 rounded-lg border border-teal-500 bg-teal-500/20 text-left text-xs transition">
             <span class="font-bold text-teal-300 block mb-0.5">1. Stretch Reflex</span>
             <span class="text-[10px] text-slate-400">Monosynaptic Arc (Ia)</span>
@@ -630,6 +630,11 @@
           <button onclick="selectSegmentalCircuit('presynaptic')" id="btn-circuit-presynaptic" class="circuit-btn p-3 rounded-lg border border-slate-800 bg-slate-800/40 text-left text-xs transition hover:bg-slate-800">
             <span class="font-bold text-emerald-300 block mb-0.5">5. Presynaptic Inhib.</span>
             <span class="text-[10px] text-slate-400">GABAergic PAD</span>
+          </button>
+
+          <button onclick="selectSegmentalCircuit('fra')" id="btn-circuit-fra" class="circuit-btn p-3 rounded-lg border border-slate-800 bg-slate-800/40 text-left text-xs transition hover:bg-slate-800">
+            <span class="font-bold text-rose-400 block mb-0.5">6. Flexor Reflex (FRA)</span>
+            <span class="text-[10px] text-slate-400">Polysynaptic Mass Spasm</span>
           </button>
         </div>
 
@@ -1353,9 +1358,19 @@
                 Fast Stretch (V3)
               </button>
             </div>
-            <button onclick="osceElicitClonus()" class="w-full py-2 px-2.5 rounded-lg bg-amber-600/80 hover:bg-amber-600 text-white font-semibold text-xs transition">
-              ⚡ Test Sustained Clonus / Cutaneous Trigger
-            </button>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <button onclick="osceElicitClonus()" class="py-2 px-2.5 rounded-lg bg-amber-600/80 hover:bg-amber-600 text-white font-semibold text-xs transition">
+                ⚡ Test Clonus (Stretch)
+              </button>
+              <button onclick="osceTriggerFraCutaneous()" id="btn-osce-fra" class="py-2 px-2.5 rounded-lg bg-rose-700 hover:bg-rose-600 text-white font-semibold text-xs transition flex items-center justify-center gap-1 shadow-sm">
+                <span>🪶/📌 Test FRA Trigger</span>
+              </button>
+            </div>
+            <div id="fra-trigger-extra" class="hidden pt-2 border-t border-slate-700/60 flex items-center gap-2">
+              <button onclick="osceTriggerCatheterFlush()" class="w-full py-1.5 px-2 rounded bg-red-900/60 hover:bg-red-800 border border-red-700 text-red-200 text-[11px] font-semibold transition">
+                🚽 Visceral Trigger: Blocked Foley Catheter
+              </button>
+            </div>
           </div>
         </div>
 
@@ -2014,20 +2029,30 @@
         nt: "GABA (acting on GABAA & GABAB)",
         role: "Tonic gatekeeper calibrating sensory gain before signals reach motor neurons",
         patho: "Marked loss of presynaptic inhibition post-stroke or post-SCI is the hallmark neurobiological trigger transforming normal stretch feedback into explosive spasticity."
+      },
+      fra: {
+        title: "Flexor Reflex Afferents (FRA) & Mass Spasm Arc",
+        mechanism: "Noxious and cutaneous stimuli activate high-threshold Aδ and C fibers alongside Group II–IV muscle afferents (FRA)  → Signals enter dorsal horn and traverse a wide polysynaptic interneuronal cascade across multiple spinal segments (L2–S1)  → Simultaneously excites flexor α-motor neurons (Iliopsoas, Hamstrings, Tibialis Anterior) while inhibiting extensors, producing Triple Flexion.",
+        afferent: "Cutaneous Aδ/C + Group II, III, IV Afferents",
+        interneuron: "Polysynaptic Interneuronal Pool (Lamina VII/VIII)",
+        nt: "Glutamate / Substance P (Excitatory cascade)",
+        role: "Protective withdrawal reflex from harmful noxious stimuli (Nociceptive Defense)",
+        patho: "Severely disinhibited in Spinal Cord Injury (SCI) due to loss of descending reticulospinal/raphe gating, axonal sprouting, and KCC2 downregulation, triggering explosive Mass Flexor Spasms from innocuous triggers (e.g., bedsheet touch, full bladder)."
       }
     };
 
     function selectSegmentalCircuit(circuitId) {
       State.segmentalCircuit = circuitId;
       document.querySelectorAll('.circuit-btn').forEach(btn => {
-        btn.classList.remove('border-teal-500', 'bg-teal-500/20', 'border-cyan-500', 'bg-cyan-500/20', 'border-amber-500', 'bg-amber-500/20', 'border-indigo-500', 'bg-indigo-500/20', 'border-emerald-500', 'bg-emerald-500/20');
+        btn.classList.remove('border-teal-500', 'bg-teal-500/20', 'border-cyan-500', 'bg-cyan-500/20', 'border-amber-500', 'bg-amber-500/20', 'border-indigo-500', 'bg-indigo-500/20', 'border-emerald-500', 'bg-emerald-500/20', 'border-rose-500', 'bg-rose-500/20');
         btn.classList.add('border-slate-800', 'bg-slate-800/40');
       });
 
       const activeBtn = document.getElementById(`btn-circuit-${circuitId}`);
       if (activeBtn) {
         activeBtn.classList.remove('border-slate-800', 'bg-slate-800/40');
-        activeBtn.classList.add('border-teal-500', 'bg-teal-500/20');
+        const activeColor = circuitId === 'fra' ? 'border-rose-500 bg-rose-500/20' : 'border-teal-500 bg-teal-500/20';
+        activeBtn.className = `circuit-btn p-3 rounded-lg border ${activeColor} text-left text-xs transition`;
       }
 
       const c = CircuitInfo[circuitId];
@@ -2483,6 +2508,61 @@
           ctx.fillStyle = '#34d399';
           ctx.font = 'bold 9.5px sans-serif';
           ctx.fillText('Presynaptic PAD Gating', cx - 232, cy - 20);
+        } else if (cType === 'fra') {
+          // ==========================================
+          // 6. FLEXOR REFLEX AFFERENTS (FRA) POLYSYNAPTIC CASCADE
+          // ==========================================
+          // Cutaneous / Nociceptive Skin Patch indicator
+          ctx.fillStyle = 'rgba(244, 63, 94, 0.2)';
+          ctx.strokeStyle = '#f43f5e';
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.roundRect(285, cy - 70, 140, 26, 5);
+          ctx.fill(); ctx.stroke();
+          ctx.fillStyle = '#fb7185';
+          ctx.font = 'bold 9.5px sans-serif';
+          ctx.fillText('⚡ Nociceptive Skin / FRA', 293, cy - 53);
+
+          // Afferent path into Dorsal Horn
+          drawPathway(ctx, 425, cy - 57, dorsalHornX, dorsalHornY, '#f43f5e', 4.5, segmentalAnimTime);
+
+          // Polysynaptic Interneuron Cascade (Lamina VII/VIII)
+          // Interneuron 1 (Primary Relay)
+          const in1X = cx - 35, in1Y = cy - 10;
+          ctx.fillStyle = '#be123c';
+          ctx.beginPath(); ctx.arc(in1X, in1Y, 11, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = '#ffffff'; ctx.font = '8.5px sans-serif'; ctx.fillText('IN-1', in1X - 9, in1Y + 3);
+
+          // Interneuron 2 (Commissural / Multi-segmental Relay)
+          const in2X = cx - 10, in2Y = cy + 15;
+          ctx.fillStyle = '#e11d48';
+          ctx.beginPath(); ctx.arc(in2X, in2Y, 11, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = '#ffffff'; ctx.font = '8.5px sans-serif'; ctx.fillText('IN-2', in2X - 9, in2Y + 3);
+
+          // Pathway Dorsal Horn -> IN1 -> IN2
+          drawPathway(ctx, dorsalHornX, dorsalHornY, in1X, in1Y, '#fb7185', 4.0, segmentalAnimTime);
+          drawPathway(ctx, in1X, in1Y, in2X, in2Y, '#fb7185', 4.0, segmentalAnimTime);
+
+          // IN2 projects to Agonist Flexor α-MN (Iliopsoas/Hamstrings/Tibialis Anterior)
+          drawPathway(ctx, in2X, in2Y, mnX, mnY - 15, '#f43f5e', 5.0, segmentalAnimTime);
+
+          // IN2 also sends inhibitory interneuron signal to Extensor α-MN (Quad/Gastrocs)
+          const extMnX = cx + 52, extMnY = cy + 42;
+          ctx.fillStyle = '#475569';
+          ctx.beginPath(); ctx.arc(extMnX, extMnY, 14, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = '#ffffff'; ctx.font = '8.5px sans-serif'; ctx.fillText('Ext-MN', extMnX - 14, extMnY + 3);
+          drawPathway(ctx, in2X, in2Y, extMnX - 10, extMnY, '#64748b', 2.0, segmentalAnimTime);
+
+          // Explanatory Tag
+          ctx.fillStyle = 'rgba(15, 23, 42, 0.95)';
+          ctx.strokeStyle = '#f43f5e';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.roundRect(cx - 245, cy - 10, 175, 22, 5);
+          ctx.fill(); ctx.stroke();
+          ctx.fillStyle = '#fda4af';
+          ctx.font = 'bold 9px sans-serif';
+          ctx.fillText('Polysynaptic Mass Spasm Chain', cx - 238, cy + 4);
         }
 
         requestAnimationFrame(renderCircuit);
@@ -3592,20 +3672,22 @@
         rationale: "Correct! Marked increase in muscle tone through most of the range of motion, but the affected part is easily moved →\rightarrow→ MAS Grade 2. Unlike Grade 3, passive movement is not difficult or stiffened."
       },
       {
-        title: "Case 3: Severe Fixed Spastic Limb (Non-functional)",
-        desc: "78-year-old nursing home resident with severe chronic traumatic brain injury. Elbow is held in severe rigid flexion; passive extension is extremely difficult with minimal joint excursion.",
+        title: "Case 3: Complete SCI with Severe Flexor Reflex Spasms",
+        desc: "28-year-old male, 14 months post-C6 complete SCI (ASIA-A). Complains of debilitating episodic spasms where both lower limbs abruptly pull into extreme triple flexion (hip/knee flexion + ankle dorsiflexion), triggered by noxious skin contact or full bladder.",
         correctMas: "3",
-        rationale: "Correct! Considerable increase in muscle tone where passive movement is difficult →\rightarrow→ MAS Grade 3. (If the joint was completely locked/ankylosed in flexion or extension, it would be scored as Grade 4)."
+        rationale: "Correct! Scored as MAS Grade 3 (or Penn Spasm Scale 4). Marked increase in muscle tone where passive extension of the spastic flexed limb is difficult. This is driven by Flexor Reflex Afferents (FRA) disinhibition and KCC2 chloride transporter downregulation in the isolated lumbar cord. Primary treatment of choice: Oral/Intrathecal Baclofen (GABAB agonist)."
       }
     ];
 
     let osceArmAngle = 30;
     let osceArmSpeed = 0;
     let osceIsTesting = false;
+    let osceFraSpasmActive = false;
 
     function loadOsceCase(idx) {
       State.osceCaseIdx = idx;
       State.osceSelectedMas = null;
+      osceFraSpasmActive = false;
       document.querySelectorAll('.case-btn').forEach(b => {
         b.classList.remove('border-teal-500/50', 'bg-teal-500/10');
         b.classList.add('border-slate-800', 'bg-slate-800/40');
@@ -3617,6 +3699,12 @@
       }
 
       document.querySelectorAll('.mas-choice').forEach(b => b.classList.remove('bg-teal-600', 'text-white'));
+
+      const extraTriggerEl = document.getElementById('fra-trigger-extra');
+      if (extraTriggerEl) {
+        if (idx === 2) extraTriggerEl.classList.remove('hidden');
+        else extraTriggerEl.classList.add('hidden');
+      }
 
       const c = OSCE_CASES[idx];
       document.getElementById('osce-case-title').textContent = c.title;
@@ -3630,6 +3718,7 @@
       osceArmAngle = 25;
       osceArmSpeed = 0.8;
       osceIsTesting = true;
+      osceFraSpasmActive = false;
       document.getElementById('osce-live-status').textContent = "Performing V1 Slow Stretch: Smooth passive movement felt.";
       document.getElementById('osce-live-status').className = "px-2.5 py-1 rounded-full text-xs font-semibold bg-cyan-500/20 text-cyan-300 border border-cyan-500/30";
     }
@@ -3638,13 +3727,39 @@
       osceArmAngle = 25;
       osceArmSpeed = 5.0;
       osceIsTesting = true;
+      osceFraSpasmActive = false;
       document.getElementById('osce-live-status').textContent = "Performing V3 Fast Stretch: PALPABLE VELOCITY-DEPENDENT CATCH!";
       document.getElementById('osce-live-status').className = "px-2.5 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-300 border border-red-500/30";
     }
 
     function osceElicitClonus() {
+      osceFraSpasmActive = false;
       document.getElementById('osce-live-status').textContent = "Testing Clonus: 4 Beats of Rhythmic Phasic Stretch Reflex Triggered.";
       document.getElementById('osce-live-status').className = "px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30";
+    }
+
+    function osceTriggerFraCutaneous() {
+      if (State.osceCaseIdx === 2) {
+        // Complete SCI: Explosive FRA Triple Flexion Spasm
+        osceFraSpasmActive = true;
+        osceArmAngle = 115; // Pulls hard into severe flexion
+        osceIsTesting = false;
+        document.getElementById('osce-live-status').textContent = "💥 EXPLOSIVE FRA SPASM! Cutaneous input triggered massive Triple Flexion!";
+        document.getElementById('osce-live-status').className = "px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-600/30 text-rose-300 border border-rose-500 animate-pulse";
+      } else {
+        // Stroke or Incomplete SCI: Preserved brainstem gating suppresses mass FRA spasm
+        osceFraSpasmActive = false;
+        document.getElementById('osce-live-status').textContent = "Normal/Stroke Gating: Brainstem tracts (MRST/LVST) inhibit FRA polysynaptic spread. No mass spasm.";
+        document.getElementById('osce-live-status').className = "px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700";
+      }
+    }
+
+    function osceTriggerCatheterFlush() {
+      osceFraSpasmActive = true;
+      osceArmAngle = 125;
+      osceIsTesting = false;
+      document.getElementById('osce-live-status').textContent = "🚨 VISCERAL NOXIOUS STIMULUS: Distended bladder triggers severe mass flexor spasm & sympathetic surge!";
+      document.getElementById('osce-live-status').className = "px-2.5 py-1 rounded-full text-xs font-semibold bg-red-600 text-white border border-red-400 animate-bounce";
     }
 
     function selectMasGrade(grade) {
@@ -3725,7 +3840,15 @@
         ctx.font = '11px sans-serif';
         ctx.fillText(`Tested Flexion Angle: ${Math.round(flexionAngle)}° | Extension Deficit: ${Math.round(flexionAngle)}°`, 180, 30);
 
-        if (hasCaught) {
+        if (osceFraSpasmActive) {
+          // Intense FRA Mass Triple Flexion Alert
+          ctx.fillStyle = '#f43f5e';
+          ctx.font = 'bold 12px sans-serif';
+          ctx.fillText(`💥 MASS FLEXOR SPASM (FRA): Uninhibited Polysynaptic Multi-joint Contraction!`, 180, 50);
+          ctx.fillStyle = '#fda4af';
+          ctx.font = '10px sans-serif';
+          ctx.fillText(`Refractory to voluntary control • Loss of Reticulospinal/Raphe brake • KCC2 Downregulated`, 180, 68);
+        } else if (hasCaught) {
           ctx.fillStyle = '#ef4444';
           ctx.font = 'bold 12px sans-serif';
           ctx.fillText(`⚠️ Dynamic Catch Triggered! Rate-Dependent Resistance (MAS 1+ / Tardieu X 2)`, 180, 50);
